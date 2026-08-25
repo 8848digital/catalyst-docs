@@ -1,14 +1,14 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from "prism-react-renderer";
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
-const GITHUB_ORG = 'https://github.com/8848digital';
+const GITHUB_ORG = "https://github.com/8848digital";
 
 const config: Config = {
-  title: 'Catalyst',
-  tagline: 'Offline-first web and React Native apps on Frappe',
+  title: "Catalyst",
+  tagline: "Offline-first Web and Mobile apps",
   // TODO(branding): add favicon.ico / logo.svg to static/img and re-enable
   // `favicon`, the navbar `logo`, and themeConfig `image` once they exist.
 
@@ -20,44 +20,54 @@ const config: Config = {
   // TODO(hosting): placeholder — set once we decide where this deploys.
   // These assume GitHub Pages under the 8848digital org. If it moves to a
   // custom domain, `url` becomes that domain and `baseUrl` becomes '/'.
-  url: 'https://8848digital.github.io',
-  baseUrl: '/catalyst-docs/',
+  url: "https://8848digital.github.io",
+  baseUrl: "/catalyst-docs/",
 
-  organizationName: '8848digital',
-  projectName: 'catalyst-docs',
+  organizationName: "8848digital",
+  projectName: "catalyst-docs",
 
   // Inter, loaded from Google Fonts. Preconnect first so the font request is not
   // blocked behind DNS and TLS setup. The CSS falls back to the system stack.
   headTags: [
-    {tagName: 'link', attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'}},
-    {tagName: 'link', attributes: {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous'}},
+    {
+      tagName: "link",
+      attributes: { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossorigin: "anonymous",
+      },
+    },
   ],
 
   stylesheets: [
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
   ],
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: "throw",
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang.
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: "en",
+    locales: ["en"],
   },
 
   presets: [
     [
-      'classic',
+      "classic",
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: "./sidebars.ts",
           editUrl: `${GITHUB_ORG}/catalyst-docs/tree/main/`,
         },
         // No blog. Re-enable here if a changelog or release feed is ever wanted.
         blog: false,
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
     ],
@@ -68,56 +78,43 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Catalyst',
+      title: "Catalyst",
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'docsSidebar',
-          position: 'left',
-          label: 'Docs',
+          type: "docSidebar",
+          sidebarId: "docsSidebar",
+          position: "left",
+          label: "Docs",
         },
         {
           href: `${GITHUB_ORG}/reactant`,
-          label: 'GitHub',
-          position: 'right',
+          label: "GitHub",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "light",
       links: [
         {
-          title: 'Docs',
+          title: "Repositories",
           items: [
             {
-              label: 'What is Catalyst?',
-              to: '/docs/getting-started/what-is-catalyst',
-            },
-            {
-              label: 'Quickstart',
-              to: '/docs/getting-started/quickstart',
-            },
-          ],
-        },
-        {
-          title: 'Repositories',
-          items: [
-            {
-              label: 'reactant (starter)',
+              label: "reactant (starter)",
               href: `${GITHUB_ORG}/reactant`,
             },
             {
-              label: 'catalyst (chassis)',
+              label: "catalyst (chassis)",
               href: `${GITHUB_ORG}/catalyst`,
             },
             {
-              label: 'offline-kit (engine)',
+              label: "offline-kit (engine)",
               href: `${GITHUB_ORG}/offline-kit`,
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} 8848 Digital. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} 8848 Digital.`,
     },
     prism: {
       theme: prismThemes.github,

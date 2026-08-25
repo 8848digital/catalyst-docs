@@ -1,67 +1,140 @@
 /**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
+ * Landing page. Deliberately quiet: a faint tinted band for the hero rather
+ * than a saturated fill, and colours drawn from theme tokens so light and dark
+ * both stay legible.
  */
 
-/* Replaces Infima's flat `hero--primary` fill with a soft gradient drawn from
-   the Catalyst indigo ramp, and gives the type room to breathe. */
-.heroBanner {
-  padding: 7rem 0 6rem;
+.hero {
+  padding: 6.5rem 0 5rem;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(160deg, #4338ca 0%, #4f46e5 45%, #6366f1 100%);
+  background: linear-gradient(180deg, var(--catalyst-hero-bg) 0%, var(--ifm-background-color) 100%);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
 }
 
-.heroBanner :global(.hero__title) {
-  font-size: 3.25rem;
+.title {
+  font-size: 3.5rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  margin-bottom: 1rem;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--ifm-heading-color);
+  margin-bottom: 1.1rem;
 }
 
-.heroBanner :global(.hero__subtitle) {
+.subtitle {
   font-size: 1.2rem;
-  font-weight: 400;
   line-height: 1.6;
-  max-width: 34rem;
+  color: var(--ifm-color-emphasis-700);
+  max-width: 32rem;
   margin: 0 auto 2.5rem;
-  opacity: 0.92;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 4rem 1.5rem 3.5rem;
-  }
-
-  .heroBanner :global(.hero__title) {
-    font-size: 2.25rem;
-  }
-
-  .heroBanner :global(.hero__subtitle) {
-    font-size: 1.05rem;
-  }
-}
-
-.buttons {
+.actions {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
-/* The default secondary button is near-white on the gradient; give it a
-   defined edge and a considered hover rather than a colour flip. */
-.buttons :global(.button) {
-  font-weight: 600;
-  padding: 0.85rem 1.75rem;
+/* Text colour is the page background, so the label stays readable against the
+   indigo in light mode and against the lighter indigo used in dark mode. */
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.5rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 0.98rem;
+  font-weight: 600;
+  border: 1px solid transparent;
   transition:
-    transform 150ms ease,
-    box-shadow 150ms ease;
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
 }
 
-.buttons :global(.button):hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+.primaryAction {
+  background-color: var(--ifm-color-primary);
+  color: var(--ifm-background-color);
+}
+
+.primaryAction:hover {
+  background-color: var(--ifm-color-primary-dark);
+  color: var(--ifm-background-color);
+  text-decoration: none;
+}
+
+.secondaryAction {
+  border-color: var(--ifm-toc-border-color);
+  color: var(--ifm-font-color-base);
+  background-color: var(--catalyst-card-bg);
+}
+
+.secondaryAction:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+/* ─── Entry points ───────────────────────────────────────────────────────── */
+
+.main {
+  padding: 4rem 0 6rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.25rem;
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 10px;
+  background-color: var(--catalyst-card-bg);
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.card:hover {
+  border-color: var(--ifm-color-primary);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ifm-heading-color);
+}
+
+.cardText {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ifm-color-emphasis-700);
+}
+
+@media screen and (max-width: 996px) {
+  .hero {
+    padding: 4rem 1.5rem 3.25rem;
+  }
+
+  .title {
+    font-size: 2.4rem;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+  }
+
+  .main {
+    padding: 3rem 0 4rem;
+  }
 }

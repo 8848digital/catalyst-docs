@@ -56,6 +56,10 @@
   --ifm-blockquote-color: #4b5563;
 
   --docusaurus-highlighted-code-line-bg: rgba(79, 70, 229, 0.12);
+
+  /* Landing page surfaces — a faint indigo wash, not a saturated fill. */
+  --catalyst-hero-bg: #f6f7ff;
+  --catalyst-card-bg: #ffffff;
 }
 
 /* ─── Dark theme ─────────────────────────────────────────────────────────── */
@@ -84,6 +88,9 @@
   --ifm-blockquote-color: #b8bcc6;
 
   --docusaurus-highlighted-code-line-bg: rgba(165, 180, 252, 0.16);
+
+  --catalyst-hero-bg: #1a1a22;
+  --catalyst-card-bg: #1c1c21;
 }
 
 /* ─── Reading rhythm ─────────────────────────────────────────────────────── */
