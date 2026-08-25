@@ -1,0 +1,11 @@
+# pnpm 10+ reads settings from here, not from package.json's "pnpm" field.
+#
+# Dependency build scripts are blocked by default. Each one must be explicitly
+# allowed or denied — leaving a package undecided makes `pnpm install` exit
+# non-zero, which in turn fails Docusaurus's pre-build dependency check.
+allowBuilds:
+  # Native SWC binary behind @docusaurus/faster. The binary itself arrives as an
+  # optional platform dependency; the postinstall verifies it resolved.
+  '@swc/core': true
+  # Postinstall only prints a funding banner — nothing to build.
+  core-js: false
