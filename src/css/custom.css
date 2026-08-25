@@ -17,21 +17,12 @@
   --ifm-color-primary-lighter: #818cf8;
   --ifm-color-primary-lightest: #a5b4fc;
 
-  /* Typography — 17px base. The 16px default reads small for long-form docs. */
+  /* Only the families and weight are overridden; sizes, line height, and the
+     heading scale stay at Infima's defaults. */
   --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --ifm-font-family-monospace: ui-monospace, 'SFMono-Regular', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-  --ifm-font-size-base: 106.25%;
-  --ifm-line-height-base: 1.75;
-  --ifm-paragraph-margin-bottom: 1.25rem;
-
   --ifm-heading-font-weight: 600;
-  --ifm-heading-line-height: 1.25;
-  --ifm-h1-font-size: 2.4rem;
-  --ifm-h2-font-size: 1.65rem;
-  --ifm-h3-font-size: 1.25rem;
-  --ifm-h4-font-size: 1.05rem;
 
-  --ifm-code-font-size: 88%;
   --ifm-code-border-radius: 6px;
   --ifm-pre-padding: 1.1rem;
 
@@ -154,11 +145,6 @@
   border-radius: var(--ifm-global-radius);
 }
 
-.theme-code-block pre {
-  font-size: 0.9rem;
-  line-height: 1.65;
-}
-
 /* The file-path label above a code block */
 [class*='codeBlockTitle'] {
   font-family: var(--ifm-font-family-monospace);
@@ -171,8 +157,6 @@
   display: block;
   width: 100%;
   overflow-x: auto;
-  font-size: 0.94rem;
-  line-height: 1.6;
   border-collapse: collapse;
   margin-bottom: 1.75rem;
 }
@@ -200,7 +184,6 @@
 
 /* ─── Sidebar and table of contents ──────────────────────────────────────── */
 .menu {
-  font-size: 0.95rem;
   padding: 1rem 0.75rem;
 }
 
@@ -219,11 +202,6 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--ifm-toc-link-color);
-}
-
-.table-of-contents {
-  font-size: 0.86rem;
-  line-height: 1.55;
 }
 
 .table-of-contents__link--active {

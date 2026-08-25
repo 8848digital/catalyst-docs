@@ -12,7 +12,7 @@
 }
 
 .title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -21,7 +21,7 @@
 }
 
 .subtitle {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   line-height: 1.6;
   color: var(--ifm-color-emphasis-700);
   max-width: 32rem;
@@ -44,7 +44,7 @@
   align-items: center;
   padding: 0.7rem 1.5rem;
   border-radius: 8px;
-  font-size: 0.98rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   border: 1px solid transparent;
   transition:
@@ -110,13 +110,13 @@
 }
 
 .cardTitle {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--ifm-heading-color);
 }
 
 .cardText {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   color: var(--ifm-color-emphasis-700);
 }
@@ -127,11 +127,11 @@
   }
 
   .title {
-    font-size: 2.4rem;
+    font-size: 2.125rem;
   }
 
   .subtitle {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
 
   .main {

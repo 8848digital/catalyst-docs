@@ -1,26 +1,29 @@
-import type {ReactNode} from 'react';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
+import type { ReactNode } from "react";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Layout from "@theme/Layout";
+import Heading from "@theme/Heading";
 
-import styles from './index.module.css';
+import styles from "./index.module.css";
 
 const ENTRY_POINTS = [
   {
-    title: 'What is Catalyst?',
-    to: '/docs/getting-started/what-is-catalyst',
-    description: 'The three layers, the dependency rule that governs them, and what each one is responsible for.',
+    title: "What is Catalyst?",
+    to: "/docs/getting-started/what-is-catalyst",
+    description:
+      "The three layers, the dependency rule that governs them, and what each one is responsible for.",
   },
   {
-    title: 'Quickstart',
-    to: '/docs/getting-started/quickstart',
-    description: 'Create a project from the template and get the web application running in about ten minutes.',
+    title: "Quickstart",
+    to: "/docs/getting-started/quickstart",
+    description:
+      "Create a project from the template and get the web application running in about ten minutes.",
   },
   {
-    title: 'Build your first feature',
-    to: '/docs/getting-started/build-your-first-feature',
-    description: 'A complete vertical slice — local database, repository, hook, component, and route.',
+    title: "Build your first feature",
+    to: "/docs/getting-started/build-your-first-feature",
+    description:
+      "A complete vertical slice — local database, repository, hook, component, and route.",
   },
 ];
 
@@ -28,7 +31,7 @@ const ENTRY_POINTS = [
 // near-black in dark mode and left the title unreadable on a coloured fill.
 // This page uses its own surface tokens so both themes stay legible.
 function Hero() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <header className={styles.hero}>
       <div className="container">
@@ -37,10 +40,16 @@ function Hero() {
         </Heading>
         <p className={styles.subtitle}>{siteConfig.tagline}</p>
         <div className={styles.actions}>
-          <Link className={styles.primaryAction} to="/docs/getting-started/what-is-catalyst">
+          <Link
+            className={styles.primaryAction}
+            to="/docs/getting-started/what-is-catalyst"
+          >
             Read the docs
           </Link>
-          <Link className={styles.secondaryAction} to="/docs/getting-started/quickstart">
+          <Link
+            className={styles.secondaryAction}
+            to="/docs/getting-started/quickstart"
+          >
             Quickstart
           </Link>
         </div>
@@ -50,11 +59,12 @@ function Hero() {
 }
 
 export default function Home(): ReactNode {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title={siteConfig.title}
-      description="Documentation for the Catalyst stack — offline-first web and React Native applications on a Frappe backend.">
+      description="Documentation for the Catalyst stack — offline-first Web and Mobile applications."
+    >
       <Hero />
       <main className={styles.main}>
         <div className="container">
