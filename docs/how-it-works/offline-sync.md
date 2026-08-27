@@ -17,11 +17,11 @@ Neither runs through the same code path, and neither waits for the other.
 The engine performs no networking of its own. It talks to a `SyncTransport` supplied
 at startup, with exactly three operations:
 
-| Operation | Direction | Purpose |
-|---|---|---|
-| `getTableStructure(lastSequence)` | inbound | Schema changes after a cursor position |
-| `getSyncData(sequence)` | inbound | One page of row data |
-| `createRecordLog(payload)` | outbound | Push one locally created record |
+| Operation                         | Direction | Purpose                                |
+| --------------------------------- | --------- | -------------------------------------- |
+| `getTableStructure(lastSequence)` | inbound   | Schema changes after a cursor position |
+| `getSyncData(sequence)`           | inbound   | One page of row data                   |
+| `createRecordLog(payload)`        | outbound  | Push one locally created record        |
 
 That is the entire surface. A different backend means implementing these three
 methods - nothing in the synchronisation logic changes.
@@ -61,7 +61,7 @@ drives the loop; the server returns no cursor.
 Each request returns a single table's rows:
 
 ```json
-{ "customer": [ { "name": "CUST-0001", "customer_name": "Acme Pvt Ltd" } ] }
+{ "customer": [{ "name": "CUST-0001", "customer_name": "Acme Pvt Ltd" }] }
 ```
 
 The client walks `sequence = 1, 2, 3…` until the data runs out, committing **one
@@ -71,8 +71,8 @@ sync is idempotent and always leaves the local copy matching the server.
 Two details are worth knowing:
 
 - **The end of data is signalled by an error, not an empty response.** Past the last
-  table the backend returns a message like *"Sequence 5 does not exist. Maximum
-  available sequence is 4."* The engine treats that as a normal stop condition and
+  table the backend returns a message like _"Sequence 5 does not exist. Maximum
+  available sequence is 4."_ The engine treats that as a normal stop condition and
   matches it on the message text, because the backend does not return a structured
   code for it. An empty object is also accepted as a stop condition.
 - **The loop is capped at 100 sequences**, so a backend that never signals the end
@@ -99,7 +99,7 @@ Foreign-key enforcement is switched off around the wipe, because the pragma cann
 change inside a transaction and inter-table references would otherwise dictate delete
 order. It is restored afterwards in a `finally`.
 
-A separate, heavier operation drops the tables *and* resets the cursor. That is the
+A separate, heavier operation drops the tables _and_ resets the cursor. That is the
 correct tool when the local schema has drifted from the backend's - dropping alone
 leaves the cursor believing the `CREATE` was applied, and resetting alone replays
 `ALTER`s against a table that already has the columns.
@@ -114,15 +114,15 @@ pending status, and a background engine drains them.
 The engine has no knowledge of your features. Each record type that needs pushing
 registers an **outbox adapter** at startup, supplying six things:
 
-| Member | Purpose |
-|---|---|
-| `name` | Stable identifier, used in diagnostics |
-| `priority` | Drain order - lower drains first |
-| `listPending()` | This feature's pending records, oldest first |
-| `buildPayload(item)` | Serialise one record for the push endpoint |
+| Member                       | Purpose                                                   |
+| ---------------------------- | --------------------------------------------------------- |
+| `name`                       | Stable identifier, used in diagnostics                    |
+| `priority`                   | Drain order - lower drains first                          |
+| `listPending()`              | This feature's pending records, oldest first              |
+| `buildPayload(item)`         | Serialise one record for the push endpoint                |
 | `markSynced(id, remoteName)` | Flip a record to synced after a confirmed acknowledgement |
-| `idOf(item)` | The record's stable local id |
-| `countPending()` | Count, for the badge and the refresh gate |
+| `idOf(item)`                 | The record's stable local id                              |
+| `countPending()`             | Count, for the badge and the refresh gate                 |
 
 This is what keeps the engine free of feature imports. Adapters are iterated in
 priority order; a new synced record type is included automatically once registered.
@@ -151,12 +151,12 @@ an unprovisioned database.
 Not every failure means the same thing, and treating them alike would either lose data
 or stall the queue behind one bad record.
 
-| Condition | Classified as | Result |
-|---|---|---|
-| Network error | transient | Stop the cycle, schedule a retry |
-| 5xx or unknown | transient | Stop the cycle, schedule a retry |
-| Structured error code from the server | permanent | Record it, **skip**, continue the queue |
-| Bare 4xx | permanent | Record it, **skip**, continue the queue |
+| Condition                             | Classified as | Result                                  |
+| ------------------------------------- | ------------- | --------------------------------------- |
+| Network error                         | transient     | Stop the cycle, schedule a retry        |
+| 5xx or unknown                        | transient     | Stop the cycle, schedule a retry        |
+| Structured error code from the server | permanent     | Record it, **skip**, continue the queue |
+| Bare 4xx                              | permanent     | Record it, **skip**, continue the queue |
 
 A **transient** failure means the connection is probably gone, so continuing is
 pointless - the cycle stops and retries the remainder later with backoff of **5s, then
@@ -182,13 +182,13 @@ is still marked pending locally. Server-side deduplication makes that retry harm
 
 ### What triggers a drain
 
-| Trigger | When |
-|---|---|
-| Startup | Once, when the engine starts |
-| Connectivity restored | On each offline-to-online transition |
-| Explicit kick | Immediately after a record is created |
-| Safety-net poll | Every 3 minutes; a no-op when nothing is pending |
-| Backoff retry | After a transient failure |
+| Trigger               | When                                             |
+| --------------------- | ------------------------------------------------ |
+| Startup               | Once, when the engine starts                     |
+| Connectivity restored | On each offline-to-online transition             |
+| Explicit kick         | Immediately after a record is created            |
+| Safety-net poll       | Every 3 minutes; a no-op when nothing is pending |
+| Backoff retry         | After a transient failure                        |
 
 The poll exists so that a missed connectivity event cannot strand the queue
 indefinitely.
@@ -197,12 +197,12 @@ indefinitely.
 
 The engine publishes a snapshot that any component can subscribe to:
 
-| Field | Meaning |
-|---|---|
-| `pendingCount` | Records waiting to be pushed |
-| `isSyncing` | A drain is currently running |
+| Field                 | Meaning                                         |
+| --------------------- | ----------------------------------------------- |
+| `pendingCount`        | Records waiting to be pushed                    |
+| `isSyncing`           | A drain is currently running                    |
 | `needsAttentionCount` | Records that have failed permanently five times |
-| `lastError` | Message from the most recent failure, or `null` |
+| `lastError`           | Message from the most recent failure, or `null` |
 
 The chassis exposes this through a hook backed by `useSyncExternalStore`, so it works
 identically on web and React Native and re-renders only when the snapshot changes.

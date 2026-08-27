@@ -13,11 +13,11 @@ The bundle identifier is globally unique and permanently tied to store listing, 
 notifications, and deep links. Changing it after release is not practical, so set it
 before the first submission.
 
-| What | Where | Placeholder |
-|---|---|---|
-| Android application ID | `apps/native/android/app/build.gradle` - `namespace` and `applicationId` | `com.example.reactant` |
-| iOS bundle identifier | Xcode build setting `PRODUCT_BUNDLE_IDENTIFIER` | project default |
-| Display name | `apps/native/app.json` (`name`, `displayName`) and iOS `CFBundleDisplayName` | `ReactantApp` |
+| What                   | Where                                                                        | Placeholder            |
+| ---------------------- | ---------------------------------------------------------------------------- | ---------------------- |
+| Android application ID | `apps/native/android/app/build.gradle` - `namespace` and `applicationId`     | `com.example.reactant` |
+| iOS bundle identifier  | Xcode build setting `PRODUCT_BUNDLE_IDENTIFIER`                              | project default        |
+| Display name           | `apps/native/app.json` (`name`, `displayName`) and iOS `CFBundleDisplayName` | `ReactantApp`          |
 
 `setup.mjs` deliberately leaves these alone. It renames package names and writes
 environment files, but touching the bundle identifier at template-init time would be
@@ -59,12 +59,12 @@ Locally, copy the example file and fill it in:
 cp apps/native/android/keystore.properties.example apps/native/android/keystore.properties
 ```
 
-| Key | What it is |
-|---|---|
-| `REACTANT_UPLOAD_STORE_FILE` | Path to the keystore, absolute recommended |
-| `REACTANT_UPLOAD_KEY_ALIAS` | The alias chosen when generating it |
-| `REACTANT_UPLOAD_STORE_PASSWORD` | Keystore password |
-| `REACTANT_UPLOAD_KEY_PASSWORD` | Key password, often the same |
+| Key                              | What it is                                 |
+| -------------------------------- | ------------------------------------------ |
+| `REACTANT_UPLOAD_STORE_FILE`     | Path to the keystore, absolute recommended |
+| `REACTANT_UPLOAD_KEY_ALIAS`      | The alias chosen when generating it        |
+| `REACTANT_UPLOAD_STORE_PASSWORD` | Keystore password                          |
+| `REACTANT_UPLOAD_KEY_PASSWORD`   | Key password, often the same               |
 
 In CI, set the same four names as environment variables instead. The build reads
 `keystore.properties` first and falls back to the environment, so the same configuration

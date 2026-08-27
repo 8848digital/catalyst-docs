@@ -14,29 +14,29 @@ Mechanical output is reliable. Judgement is where to look.
 These are conventions with one right answer. The skill knows it, and checking by hand
 adds nothing.
 
-| Accept on sight | Why |
-|---|---|
-| File placement and naming | Fully determined by the slice and component conventions |
-| Layering - which file imports what | Determined by the rules, and the linter catches violations anyway |
-| Boilerplate: barrels, index files, re-exports | Mechanical |
-| Props naming - `onPress`, `label`, `className` optional | A fixed convention, applied consistently |
-| Token usage instead of raw values | `design-qa` verifies this independently |
-| Element mapping during a native port | A lookup table: `div` → `View`, `span` → `Text` |
-| `cva` variants becoming keyed `StyleSheet` | A mechanical transform |
+| Accept on sight                                         | Why                                                               |
+| ------------------------------------------------------- | ----------------------------------------------------------------- |
+| File placement and naming                               | Fully determined by the slice and component conventions           |
+| Layering - which file imports what                      | Determined by the rules, and the linter catches violations anyway |
+| Boilerplate: barrels, index files, re-exports           | Mechanical                                                        |
+| Props naming - `onPress`, `label`, `className` optional | A fixed convention, applied consistently                          |
+| Token usage instead of raw values                       | `design-qa` verifies this independently                           |
+| Element mapping during a native port                    | A lookup table: `div` → `View`, `span` → `Text`                   |
+| `cva` variants becoming keyed `StyleSheet`              | A mechanical transform                                            |
 
 ## Verify
 
 These required an interpretation, an assumption, or knowledge the AI does not have.
 
-| Check every time | What goes wrong |
-|---|---|
-| **The data model** | A slice scaffolded from a pasted response mirrors *that* response. If the sample was partial or unrepresentative, the types are wrong in a way that compiles |
-| **Business rules in `usecases`** | The skill generates the shape of a write path, not the rules governing it |
-| **Anything touching sync** | Outbox adapters, retry behaviour, what counts as a permanent failure. Errors here surface as lost or duplicated records, not as build failures |
-| **SQL correctness** | Generated queries are syntactically valid and may still be semantically wrong - a missing filter, a wrong join, an index that does not exist |
-| **Import specifiers** | See the known issue below |
-| **Native behaviour after a port** | The port is mechanical; the *result* has never run on a device |
-| **Whether the design is right** | `design-qa` proves the component matches the Figma. It cannot tell you the Figma is wrong |
+| Check every time                  | What goes wrong                                                                                                                                              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **The data model**                | A slice scaffolded from a pasted response mirrors _that_ response. If the sample was partial or unrepresentative, the types are wrong in a way that compiles |
+| **Business rules in `usecases`**  | The skill generates the shape of a write path, not the rules governing it                                                                                    |
+| **Anything touching sync**        | Outbox adapters, retry behaviour, what counts as a permanent failure. Errors here surface as lost or duplicated records, not as build failures               |
+| **SQL correctness**               | Generated queries are syntactically valid and may still be semantically wrong - a missing filter, a wrong join, an index that does not exist                 |
+| **Import specifiers**             | See the known issue below                                                                                                                                    |
+| **Native behaviour after a port** | The port is mechanical; the _result_ has never run on a device                                                                                               |
+| **Whether the design is right**   | `design-qa` proves the component matches the Figma. It cannot tell you the Figma is wrong                                                                    |
 
 :::warning[Known issue - check import paths]
 

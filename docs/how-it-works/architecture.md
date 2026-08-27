@@ -79,14 +79,14 @@ permit.
 Every boundary is crossed by a **contract**: an interface defined by the inner layer and
 implemented by an outer one.
 
-| Contract | Defined by | Implemented by | Registered with |
-|---|---|---|---|
-| `OfflineDb` | engine | product - platform driver | `setOfflineDbOpener` |
-| `ConnectivityProvider` | engine | product - platform driver | `setConnectivityProvider` |
-| `OutboxAdapter` | engine | product - a feature slice | `registerOutboxAdapter` |
-| `SyncTransport` | engine | **chassis** - `httpSyncTransport` | `setSyncTransport` |
-| Base URL, token, app name, navigation, logout | chassis | product - boot wiring | `setBaseUrl`, `setGetToken`, … |
-| Invalidation keys | chassis | product | `registerInvalidationKeys` |
+| Contract                                      | Defined by | Implemented by                    | Registered with                |
+| --------------------------------------------- | ---------- | --------------------------------- | ------------------------------ |
+| `OfflineDb`                                   | engine     | product - platform driver         | `setOfflineDbOpener`           |
+| `ConnectivityProvider`                        | engine     | product - platform driver         | `setConnectivityProvider`      |
+| `OutboxAdapter`                               | engine     | product - a feature slice         | `registerOutboxAdapter`        |
+| `SyncTransport`                               | engine     | **chassis** - `httpSyncTransport` | `setSyncTransport`             |
+| Base URL, token, app name, navigation, logout | chassis    | product - boot wiring             | `setBaseUrl`, `setGetToken`, … |
+| Invalidation keys                             | chassis    | product                           | `registerInvalidationKeys`     |
 
 The direction is consistent throughout: **the inner layer declares the shape, an outer
 layer supplies the implementation, and the inner layer receives it at startup.** The
@@ -112,7 +112,7 @@ a product hook until the dependency is added.
 
 **Lint rules.** Within the product layer, ESLint confines `getOfflineDb` to a slice's
 `data/**`, `usecases.ts`, `outbox.ts`, and `shared-domain/**`, and bans `axios` outright.
-This governs layering *inside* the product layer, where no package boundary exists to do
+This governs layering _inside_ the product layer, where no package boundary exists to do
 the job.
 
 One honest gap: nothing mechanically prevents the chassis from importing product code,

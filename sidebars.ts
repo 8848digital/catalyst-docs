@@ -1,4 +1,4 @@
-import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -13,45 +13,32 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
  */
 const sidebars: SidebarsConfig = {
   docsSidebar: [
-    "why-catalyst",
+    'why-catalyst',
     {
-      type: "category",
-      label: "How Catalyst works",
+      type: 'category',
+      label: 'How Catalyst works',
       collapsed: false,
-      items: ["how-it-works/architecture",
-        "how-it-works/offline-sync",
-        "how-it-works/data-flow",],
+      items: ['how-it-works/architecture', 'how-it-works/offline-sync', 'how-it-works/data-flow'],
     },
     {
-      type: "category",
-      label: "AI-assisted development",
+      type: 'category',
+      label: 'AI-assisted development',
       collapsed: false,
-      items: ["ai/how-it-fits", "ai/the-skills", "ai/trust-and-verify"],
+      items: ['ai/how-it-fits', 'ai/the-skills', 'ai/trust-and-verify'],
     },
     {
-      type: "category",
-      label: "Build",
+      type: 'category',
+      label: 'Build',
       collapsed: false,
-      items: [
-        "build/quickstart",
-        "build/the-workspace",
-        "build/design-system-setup",
-        "build/your-first-feature",
-        "build/writes-and-the-outbox",
-        "build/components-and-tokens",
-      ],
+      items: ['build/quickstart', 'build/the-workspace', 'build/design-system-setup', 'build/your-first-feature', 'build/writes-and-the-outbox', 'build/components-and-tokens'],
     },
     {
-      type: "category",
-      label: "Ship to native",
+      type: 'category',
+      label: 'Ship to native',
       collapsed: false,
-      items: [
-        "ship-to-native/the-migration",
-        "ship-to-native/what-web-qa-cannot-catch",
-        "ship-to-native/release",
-      ],
+      items: ['ship-to-native/the-migration', 'ship-to-native/what-web-qa-cannot-catch', 'ship-to-native/release'],
     },
-    "troubleshooting",
+    'troubleshooting',
   ],
 };
 

@@ -233,4 +233,5 @@ pnpm build       # a type error is usually more specific than a runtime symptom
 ```
 
 And for the database specifically, `runOfflineDbHealthCheck()` exercises the full contract
+
 - open, query, write, read back, transaction - and reports which step failed.

@@ -17,10 +17,10 @@ This is the least obvious one, so it is worth stating plainly.
 Both platforms satisfy the same `OfflineDb` contract, so `@app/core` cannot tell them
 apart. Underneath, they share no code:
 
-| | Web | Native |
-|---|---|---|
-| Engine | SQLite compiled to WebAssembly | `react-native-sqlite-2` |
-| Storage | Origin Private File System | The device filesystem |
+|              | Web                                       | Native                                                   |
+| ------------ | ----------------------------------------- | -------------------------------------------------------- |
+| Engine       | SQLite compiled to WebAssembly            | `react-native-sqlite-2`                                  |
+| Storage      | Origin Private File System                | The device filesystem                                    |
 | Transactions | Worker messages, serialised by a JS mutex | A private low-level `exec`, with manual `BEGIN`/`COMMIT` |
 
 The native driver exists in that shape for a specific reason: the library it wraps is a

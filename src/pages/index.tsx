@@ -1,29 +1,26 @@
-import type { ReactNode } from "react";
-import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import Layout from "@theme/Layout";
-import Heading from "@theme/Heading";
+import type { ReactNode } from 'react';
+import Link from '@docusaurus/Link';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import Layout from '@theme/Layout';
+import Heading from '@theme/Heading';
 
-import styles from "./index.module.css";
+import styles from './index.module.css';
 
 const ENTRY_POINTS = [
   {
-    title: "Why Catalyst",
-    to: "/docs/why-catalyst",
-    description:
-      "The problem it was built to solve, what it changes about delivery, and where it fits.",
+    title: 'Why Catalyst',
+    to: '/docs/why-catalyst',
+    description: 'The problem it was built to solve, what it changes about delivery, and where it fits.',
   },
   {
-    title: "Quickstart",
-    to: "/docs/build/quickstart",
-    description:
-      "Create a project from the template and get the web application running in about ten minutes.",
+    title: 'Quickstart',
+    to: '/docs/build/quickstart',
+    description: 'Create a project from the template and get the web application running in about ten minutes.',
   },
   {
-    title: "Your first feature",
-    to: "/docs/build/your-first-feature",
-    description:
-      "A complete vertical slice - local database, repository, hook, component, and route.",
+    title: 'Your first feature',
+    to: '/docs/build/your-first-feature',
+    description: 'A complete vertical slice - local database, repository, hook, component, and route.',
   },
 ];
 
@@ -40,16 +37,10 @@ function Hero() {
         </Heading>
         <p className={styles.subtitle}>{siteConfig.tagline}</p>
         <div className={styles.actions}>
-          <Link
-            className={styles.primaryAction}
-            to="/docs/why-catalyst"
-          >
+          <Link className={styles.primaryAction} to="/docs/why-catalyst">
             Read the docs
           </Link>
-          <Link
-            className={styles.secondaryAction}
-            to="/docs/build/quickstart"
-          >
+          <Link className={styles.secondaryAction} to="/docs/build/quickstart">
             Quickstart
           </Link>
         </div>
@@ -61,10 +52,7 @@ function Hero() {
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout
-      title={siteConfig.title}
-      description="Documentation for the Catalyst stack - offline-first Web and Mobile applications."
-    >
+    <Layout title={siteConfig.title} description="Documentation for the Catalyst stack - offline-first Web and Mobile applications.">
       <Hero />
       <main className={styles.main}>
         <div className="container">

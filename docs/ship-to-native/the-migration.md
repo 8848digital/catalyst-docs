@@ -11,15 +11,15 @@ below the component layer moves, because nothing below it was ever web-specific.
 It helps to be precise about this, because "we just migrate the UI layer" understates
 the work and produces optimistic estimates.
 
-| | Transfers |
-|---|---|
-| `@app/core` - hooks, repositories, data access, types, tokens | **Unchanged.** Not edited, not copied, not adapted |
-| The props interface | **Mirrored verbatim**, re-expressed as explicit unions |
-| Component logic - state, conditionals, event wiring | Carries over structurally |
-| JSX markup | **Rewritten** against RN primitives |
-| Styling | **Rewritten** as `StyleSheet` with `rnTokens` |
+|                                                               | Transfers                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------ |
+| `@app/core` - hooks, repositories, data access, types, tokens | **Unchanged.** Not edited, not copied, not adapted     |
+| The props interface                                           | **Mirrored verbatim**, re-expressed as explicit unions |
+| Component logic - state, conditionals, event wiring           | Carries over structurally                              |
+| JSX markup                                                    | **Rewritten** against RN primitives                    |
+| Styling                                                       | **Rewritten** as `StyleSheet` with `rnTokens`          |
 
-So the component's *contract* and *behaviour* transfer; its *rendering* is rewritten. The
+So the component's _contract_ and _behaviour_ transfer; its _rendering_ is rewritten. The
 saving is real and large, but it comes from the data layer being written once, not from
 the component being copied.
 
@@ -51,19 +51,19 @@ export. Its one inviolable rule: **`@app/core` is never modified.**
 
 ### Elements
 
-| Web | Native |
-|---|---|
-| `div`, layout `span` | `View` |
-| `p`, `h1`-`h6`, `label`, text `span` | `Text` |
-| `button` | `TouchableOpacity` wrapping a `Text` |
-| `input` | `TextInput` - `onChangeText`, not `onChange` |
-| `textarea` | `TextInput multiline` |
-| `img` | `Image` - explicit `width` and `height` required |
-| Long or dynamic list | `FlatList` - never `.map()` inside a `ScrollView` |
-| Short static list | `View` with mapped `View` children |
-| `a` / `Link` | `TouchableOpacity` + `navigation.navigate` |
-| `form` | `View` - React Native has no form element |
-| `hr` | `View` with `height: 1` and a background colour |
+| Web                                  | Native                                            |
+| ------------------------------------ | ------------------------------------------------- |
+| `div`, layout `span`                 | `View`                                            |
+| `p`, `h1`-`h6`, `label`, text `span` | `Text`                                            |
+| `button`                             | `TouchableOpacity` wrapping a `Text`              |
+| `input`                              | `TextInput` - `onChangeText`, not `onChange`      |
+| `textarea`                           | `TextInput multiline`                             |
+| `img`                                | `Image` - explicit `width` and `height` required  |
+| Long or dynamic list                 | `FlatList` - never `.map()` inside a `ScrollView` |
+| Short static list                    | `View` with mapped `View` children                |
+| `a` / `Link`                         | `TouchableOpacity` + `navigation.navigate`        |
+| `form`                               | `View` - React Native has no form element         |
+| `hr`                                 | `View` with `height: 1` and a background colour   |
 
 :::warning[Every string must be inside a Text element]
 
@@ -114,13 +114,13 @@ strings does not.
 
 ### Events, navigation, accessibility
 
-| Web | Native |
-|---|---|
-| `onClick` | `onPress` |
-| `onChange` | `onChangeText` |
-| React Router / `next/link` | React Navigation |
-| ARIA attributes | `accessibilityRole`, `accessibilityLabel`, `accessibilityState` |
-| `Loader2` spinner | `ActivityIndicator` |
+| Web                        | Native                                                          |
+| -------------------------- | --------------------------------------------------------------- |
+| `onClick`                  | `onPress`                                                       |
+| `onChange`                 | `onChangeText`                                                  |
+| React Router / `next/link` | React Navigation                                                |
+| ARIA attributes            | `accessibilityRole`, `accessibilityLabel`, `accessibilityState` |
+| `Loader2` spinner          | `ActivityIndicator`                                             |
 
 Imports are classified rather than translated wholesale: everything from `@app/core`
 stays exactly as it was, web-only imports (`cn`, `cva`, `lucide-react`) are removed, and

@@ -6,11 +6,11 @@ description: Every skill in the dev kit - what it generates, what it reviews, an
 The dev kit contains ten skills and one agent. They fall into three groups, and knowing
 which group you are dealing with tells you what to expect from it.
 
-| Group | Produces | Examples |
-|---|---|---|
-| **Generators** | Files | `feature-slice`, `web-component`, `web-to-native` |
-| **The reviewer** | A report, never an edit | `design-qa` |
-| **Discipline skills** | Nothing directly - they shape how other work is done | `react-renderer`, `typescript-teacher` |
+| Group                 | Produces                                             | Examples                                          |
+| --------------------- | ---------------------------------------------------- | ------------------------------------------------- |
+| **Generators**        | Files                                                | `feature-slice`, `web-component`, `web-to-native` |
+| **The reviewer**      | A report, never an edit                              | `design-qa`                                       |
+| **Discipline skills** | Nothing directly - they shape how other work is done | `react-renderer`, `typescript-teacher`            |
 
 ## Generators
 
@@ -23,7 +23,7 @@ Turns the project's Figma into the token system both platforms read.
 
 - Extracts tokens from Figma through the MCP
 - Establishes `tokens/index.ts` as the single source of truth, with `tokens/rn-styles.ts` derived from it
-- Wires Tailwind as a *consumer* of those tokens, never as a definition of them
+- Wires Tailwind as a _consumer_ of those tokens, never as a definition of them
 - Audits token drift afterwards
 
 Run this **once per project, early**. Every project starts from its own Figma; there is
@@ -122,12 +122,12 @@ Two things to know:
 These generate nothing on their own. They carry the framework's rules for a particular
 area and shape how the generators and your own edits behave.
 
-| Skill | Covers |
-|---|---|
-| `nextjs-nerd` | The App Router shell - routing, layouts, metadata, streaming, server components. Enforces that the shell renders `ui-web` components and never builds UI inline |
-| `react-native-expert` | Navigation, safe areas, keyboard, Android back, list performance, native modules |
-| `react-renderer` | Effect design, memoisation, error boundaries, Suspense, custom hooks |
-| `typescript-teacher` | Where a type belongs, shared local + remote entity contracts, discriminated unions, type guards |
+| Skill                 | Covers                                                                                                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nextjs-nerd`         | The App Router shell - routing, layouts, metadata, streaming, server components. Enforces that the shell renders `ui-web` components and never builds UI inline |
+| `react-native-expert` | Navigation, safe areas, keyboard, Android back, list performance, native modules                                                                                |
+| `react-renderer`      | Effect design, memoisation, error boundaries, Suspense, custom hooks                                                                                            |
+| `typescript-teacher`  | Where a type belongs, shared local + remote entity contracts, discriminated unions, type guards                                                                 |
 
 They defer to each other deliberately - `react-native-expert` hands component building
 to `rn-component`, data to `feature-slice`, tokens to `design-system-setup`. You rarely
@@ -144,11 +144,11 @@ It copies templates rather than overwriting; pass `--force` to replace existing 
 
 ## How to invoke
 
-| Skill | How |
-|---|---|
-| `feature-slice`, `zustand-slice`, `design-qa`, `init-dev-kit` | Slash command |
+| Skill                                                                   | How                                                                     |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `feature-slice`, `zustand-slice`, `design-qa`, `init-dev-kit`           | Slash command                                                           |
 | `design-system-setup`, `web-component`, `rn-component`, `web-to-native` | Describe the task - "build a Button in ui-web", "port Button to native" |
-| The four discipline skills | Automatically, when the work is in their area |
+| The four discipline skills                                              | Automatically, when the work is in their area                           |
 
 ## What they will not do
 

@@ -1,0 +1,7 @@
+# Generated
+build
+.docusaurus
+node_modules
+
+# Managed by pnpm
+pnpm-lock.yaml
