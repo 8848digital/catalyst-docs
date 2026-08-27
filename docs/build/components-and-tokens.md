@@ -1,15 +1,30 @@
 ---
 title: Components and tokens
-description: Where component code lives, how the design tokens reach Tailwind and React Native, and how to build a component that works on both platforms.
+description: The pipeline from a project's Figma to a token set, a web component, and its native twin - and what to check at each step.
 ---
 
 Both component packages - `@app/ui-web` and `@app/ui-native` - ship empty. That is
-deliberate: components are product decisions, and the template does not presume a
-design system. What it does provide is the styling contract both packages read from.
+deliberate: components are product decisions, and the template does not presume a design
+system.
+
+What the framework provides is the **styling contract** both packages read from, and a
+pipeline that produces components conforming to it.
+
+## The pipeline
+
+| Step | Skill | Produces | Run |
+|---|---|---|---|
+| 1. Tokens | `design-system-setup` | `tokens/index.ts` + `tokens/rn-styles.ts` | Once per project |
+| 2. Web component | `web-component` | A component folder in `ui-web` | Per component |
+| 3. Verify | `design-qa` | A pass/fail report, never an edit | Per component |
+| 4. Native twin | `web-to-native` | The `ui-native` equivalent | After web QA passes |
+
+The rest of this page is what each step produces and what to check, because reviewing
+generated output is the actual skill.
 
 ## Where component code lives
 
-There are three homes, and choosing correctly matters more than it first appears.
+Three homes, and choosing correctly matters more than it first appears.
 
 | Location | What belongs there | Runs on |
 |---|---|---|
@@ -18,29 +33,31 @@ There are three homes, and choosing correctly matters more than it first appears
 | `packages/ui-native` | The React Native equivalents. | Native |
 
 The distinction between the first two is the one people get wrong. The Next.js `app`
-directory is the **server shell** - it owns the route, the page title, and what data
-gets fetched. It has no native counterpart and never will. Anything with a native twin,
-or that could plausibly grow one, belongs in `@app/ui-web` instead.
+directory is the **server shell** - it owns the route, the page title, and what data gets
+fetched. It has no native counterpart and never will. Anything with a native twin, or
+that could plausibly grow one, belongs in `@app/ui-web`.
 
 A practical test: if the component would break without a server, it is not a `ui-web`
 component.
 
-## One source for every visual value
+## Step 1 - Generate the token set
 
-All colour, typography, spacing, radius, and shadow values live in a single file:
+Every project starts from **its own Figma file**. There is no shared design system to
+inherit, so this runs once, early, per project.
+
+The `design-system-setup` skill extracts the values through the Figma MCP and
+establishes the two-file pipeline:
 
 ```
-packages/core/src/tokens/index.ts
+packages/core/src/tokens/index.ts       the single source of truth
+packages/core/src/tokens/rn-styles.ts   derived from it, for React Native
 ```
 
-Nothing else defines them. Tailwind does not define colours; it reads them. React
-Native styles do not define spacing; they read it. Rebranding is therefore editing one
-file rather than auditing a codebase.
+It also wires Tailwind as a **consumer** of those tokens. Tailwind never defines a value;
+it reads them. If you find yourself editing `tailwind.config.ts` to change a colour,
+something has gone wrong.
 
-The values shipped in the template are **neutral placeholders**. Replace them, but keep
-the shape - both consumers below index into these exact keys.
-
-### The scales
+### What the token set contains
 
 | Group | Keys |
 |---|---|
@@ -50,15 +67,14 @@ the shape - both consumers below index into these exact keys.
 | `radius` | `none` 0 · `sm` 4 · `md` 8 · `lg` 12 · `xl` 16 · `full` 9999 |
 | `shadow` | `sm` · `md` · `lg`, each with separate `web` and `native` forms |
 
-Colours are grouped by role rather than by hue - `text.*`, `surface.*`, `border.*`,
-`semantic.*`, `input.*`, `overlay.*`, plus `brand.*` and the raw `palette.*` ramps.
-Reach for the role, not the ramp: `colors.text.secondary`, not `palette.neutral[600]`.
+Colours are grouped by **role** rather than hue - `text.*`, `surface.*`, `border.*`,
+`semantic.*`, `input.*`, `overlay.*`, plus `brand.*` and the raw `palette.*` ramps. Reach
+for the role, not the ramp: `colors.text.secondary`, not `palette.neutral[600]`.
 
-## Web: tokens reach you as Tailwind classes
+## How tokens reach a web component
 
-`apps/web/tailwind.config.ts` imports the token file and maps it into the theme. It
-defines no values of its own. The class names that result are mechanical but not always
-obvious:
+The mapping is mechanical but not always obvious, and it is what you are reading when
+you review a generated component:
 
 | Token | Class |
 |---|---|
@@ -70,21 +86,20 @@ obvious:
 | `radius.md` | `rounded-md` |
 | `shadow.sm` | `shadow-sm` |
 
-The doubled names (`text-text-primary`, `border-border-default`) look wrong and are
-correct - the first word is the Tailwind utility, the second is the token group.
+The doubled names - `text-text-primary`, `border-border-default` - look wrong and are
+correct. The first word is the Tailwind utility, the second is the token group.
 
 :::warning[Three Tailwind gotchas]
 
 **Use `text-md`, not `text-base`.** The token scale names the 16px step `md`, where
 Tailwind's default calls it `base`. Both classes exist; only `text-md` is a token.
 
-**Radius values differ from Tailwind's defaults.** The tokens override `sm`, `md`,
-`lg`, and `xl` with 4/8/12/16px rather than Tailwind's 2/6/8/12px. Same names,
-different values.
+**Radius values differ from Tailwind's defaults.** The tokens override `sm`, `md`, `lg`,
+and `xl` with 4/8/12/16px rather than Tailwind's 2/6/8/12px. Same names, different values.
 
-**Non-token utilities still resolve.** The config uses `theme.extend`, so Tailwind's
-own scale remains available - `p-7` and `rounded-2xl` will render, silently bypassing
-the token system. If a value is not in the tables above, it is not a token.
+**Non-token utilities still resolve.** The config uses `theme.extend`, so Tailwind's own
+scale remains available - `p-7` and `rounded-2xl` render fine while silently bypassing the
+token system. If a value is not in the tables above, it is not a token.
 
 :::
 
@@ -94,15 +109,14 @@ One more thing the config controls: which files Tailwind scans.
 content: ['./app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}', '../../packages/ui-web/src/**/*.{ts,tsx}'],
 ```
 
-`@app/ui-web` is listed explicitly. If you add another package containing Tailwind
-classes, add its path here too - otherwise its classes are purged from the production
-build and the component renders unstyled only after deploying.
+`@app/ui-web` is listed explicitly. A new package containing Tailwind classes must be
+added here too - otherwise its classes are purged from the production build, and the
+component renders unstyled only after deploying.
 
-## Before writing a web component
+## Before generating a web component
 
-`@app/ui-web` does not declare `@app/core` as a dependency. Every other package in the
-workspace does; this one is the exception. A component there cannot import a product
-hook until you add it:
+`@app/ui-web` does not declare `@app/core`. Every other package in the workspace does, so
+a component there cannot import a product hook until you add it:
 
 ```json title="packages/ui-web/package.json"
 "dependencies": {
@@ -114,76 +128,64 @@ hook until you add it:
 }
 ```
 
-Then re-run `pnpm install`. `@app/ui-native` already declares it, so the native side
-needs no equivalent step.
+Then `pnpm install`. `@app/ui-native` already declares it.
 
-## Building a web component
+## Step 2 - Generate the component
 
-```tsx title="packages/ui-web/src/components/StatusBadge.tsx"
-'use client';
+The `web-component` skill is **Figma-first**. Give it the node; it extracts the design
+values, maps them to tokens, and produces a folder:
 
-import { cn } from '../lib/utils';
-
-interface StatusBadgeProps {
-  label: string;
-  tone?: 'neutral' | 'success' | 'error';
-  className?: string;
-}
-
-export function StatusBadge({ label, tone = 'neutral', className }: StatusBadgeProps) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium',
-        tone === 'neutral' && 'bg-surface-muted text-text-secondary',
-        tone === 'success' && 'bg-success-surface text-success',
-        tone === 'error' && 'bg-error-surface text-error',
-        className,
-      )}
-    >
-      {label}
-    </span>
-  );
-}
+```
+packages/ui-web/src/components/StatusBadge/
+  StatusBadge.tsx
+  StatusBadge.types.ts
+  index.ts
 ```
 
-Export it from the barrel:
+What it generates, and why each convention exists:
 
-```ts title="packages/ui-web/src/index.ts"
-export { StatusBadge } from './components/StatusBadge';
+- **`cva` for variants**, so variant logic is declarative and can be mechanically converted to keyed `StyleSheet` during the native port.
+- **`cn()` for class merging** - `clsx` composed with `tailwind-merge`. This is what lets a caller's `className="px-6"` actually override a built-in `px-3` instead of producing two competing padding classes.
+- **A props interface in its own `.types.ts`**, extending `VariantProps`, so the native twin can mirror it verbatim.
+- **Default, disabled, and loading states** covered.
+- **A `// figma:` annotation** at the top recording the source node. `design-qa` reads it; without it, verification cannot run.
+- **Migration-ready naming** - `onPress` rather than `onClick`, a `label` prop rather than bare children, `className` optional.
+
+That last one is worth understanding rather than just accepting. Native has no
+`onClick` and its `Text` needs a string rather than JSX children. Naming props this way
+on the web costs nothing and makes the later port mechanical instead of a redesign.
+
+A component with no Figma node is the case where this skill does not apply - there is
+nothing to extract. Write those by hand, following the same conventions.
+
+## Step 3 - Verify against the design
+
+```
+/design-qa StatusBadge
 ```
 
-Two conventions in that example.
+Five checks run every time: token compliance, pixel accuracy, variant coverage, state
+coverage, and spacing.
 
-**`cn` handles conditional and conflicting classes.** It is `clsx` composed with
-`tailwind-merge` (`packages/ui-web/src/lib/utils.ts`). `clsx` resolves the conditionals;
-`tailwind-merge` ensures a caller passing `className="px-6"` actually overrides the
-built-in `px-3` rather than producing two competing padding classes. Accepting a
-`className` prop and merging it last is what makes a component reusable.
+Two things to know:
 
-**Every value is a token.** No hex codes, no arbitrary values like `text-[15px]`.
+- **It never edits.** Its toolset is read-only by design. You get a report with flagged issues and suggested fixes; applying them is your call.
+- **It will not guess a Figma node.** No `// figma:` annotation and no URL argument means it flags "no Figma source recorded" and stops.
 
-For components with several dimensions of variation, `class-variance-authority` is
-already installed and gives a typed variant API instead of a growing pile of ternaries.
-It is worth reaching for at about three variants.
+What it proves is *fidelity to the design*. It cannot tell you the design is wrong.
 
-## Building a native component
+## The native side
 
-Native has no class names. Styles come from `rnTokens`, a StyleSheet-ready projection
-of the same token file:
+Native has no class names. Styles come from `rnTokens`, a StyleSheet-ready projection of
+the same token file:
 
-```tsx title="packages/ui-native/src/components/StatusBadge.tsx"
+```tsx title="packages/ui-native/src/components/StatusBadge/StatusBadge.tsx"
 import { StyleSheet, Text, View } from 'react-native';
 import { rnTokens } from '@app/core/tokens/rn-styles';
 
-interface StatusBadgeProps {
-  label: string;
-  tone?: 'neutral' | 'success' | 'error';
-}
-
-export function StatusBadge({ label, tone = 'neutral' }: StatusBadgeProps) {
+export function StatusBadge({ label }: StatusBadgeProps) {
   return (
-    <View style={[styles.base, styles[tone]]}>
+    <View style={styles.base}>
       <Text style={styles.label}>{label}</Text>
     </View>
   );
@@ -195,10 +197,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: rnTokens.spacing[3],
     paddingVertical: rnTokens.spacing[1],
     borderRadius: rnTokens.radius.full,
+    backgroundColor: rnTokens.colors.neutral[100],
   },
-  neutral: { backgroundColor: rnTokens.colors.neutral[100] },
-  success: { backgroundColor: rnTokens.colors.neutral[100] },
-  error: { backgroundColor: rnTokens.colors.neutral[100] },
   label: {
     fontSize: rnTokens.typography.size.sm,
     fontWeight: rnTokens.typography.weight.medium,
@@ -207,9 +207,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-`rnTokens` is derived from the same token file, so a brand change propagates without
-touching this file. `apps/native/src/screens/WelcomeScreen.tsx` is a working example in
-the template.
+`apps/native/src/screens/WelcomeScreen.tsx` is a working example in the template.
 
 :::warning[The native token surface is narrower than the web one]
 
@@ -222,46 +220,56 @@ the template.
 - `border.strong`, all of `input.*`, and `overlay.*`
 - `shadow.topBar`, which has no native form at all
 
-This is why the success and error tones above fall back to a neutral background - the
-surface colours they need are not projected yet.
-
-If a native component needs one of these, add it to `packages/core/src/tokens/rn-styles.ts`
-rather than reaching into the raw token file or hardcoding a value. That file is the
-seam; widening it is the intended change.
+`web-to-native` checks this before it starts: if the web component uses a token with no
+`rnTokens` equivalent, it stops and sends you back. That is a `design-system-setup` gap,
+and the fix is to widen `tokens/rn-styles.ts` - not to hardcode a value in the component.
 
 :::
 
-## Keeping a component migratable
+## Step 4 - Port to native
 
-A `ui-web` component that may one day get a native twin should hold to four rules:
+```
+port StatusBadge from ui-web to ui-native
+```
 
-1. **`'use client'` at the top.** It uses hooks or handlers, so it cannot be a Server Component.
-2. **No server-only APIs.** Nothing from `next/headers`, no filesystem access, no environment reads. It must run without a server.
-3. **Data by props or `@app/core` hooks.** Never a direct SQL call, and never a fetch of its own.
-4. **No framework-specific imports.** `next/link` and `next/image` have no native equivalent. Take an `onPress`-style callback or a plain href as a prop instead.
+`web-to-native` mirrors the props verbatim as explicit unions, maps HTML elements to RN
+primitives, converts `cva` variants to keyed `StyleSheet`, translates Tailwind classes to
+`rnTokens`, and swaps events and ARIA for `onPress` and `accessibility*`.
 
-Components that follow these have a mechanical native port: the logic and props transfer
-unchanged, and only the markup and styling are rewritten.
+**The rule it will not break:** `@app/core` is never modified. Only JSX and styling
+change.
+
+Its pre-migration checklist will refuse a component that is not QA-approved, still uses
+`onClick`, carries hardcoded values, or needs a missing `rnTokens` entry. Those are all
+signals to fix the web component first.
+
+## What to check in the port
+
+The conversion is mechanical, so the output is reliable. What is not verifiable by any
+skill is how it behaves on a device:
+
+- every bare string wrapped in `<Text>` - native throws otherwise
+- `FlatList` for dynamic lists, not `.map`
+- no percentage widths, no CSS shorthand
+- and then: run it on a device
 
 ## Rebranding
 
 1. Edit the values in `packages/core/src/tokens/index.ts`. **Keep every key** - both
    consumers index into these names.
-2. Restart the web dev server. Tailwind reads the config at build time, so a token
-   change is not picked up by hot reload.
-3. Native requires no step. `rnTokens` derives from the same file.
+2. Restart the web dev server. Tailwind reads its config at build time, so a token change
+   is not picked up by hot reload.
+3. Native needs no step. `rnTokens` derives from the same file.
 
-Since components reference roles rather than values, a rebrand needs no component edits.
-If one does, a raw value leaked in somewhere.
+Because components reference roles rather than values, a rebrand needs no component
+edits. If one does, a raw value leaked in somewhere - and `design-qa` will find it.
 
 ## Icons
 
-Both packages ship an icon library: `lucide-react` on web, `react-native-vector-icons`
-on native. Neither is wired into anything yet - they are available, not prescribed.
+`lucide-react` on web, `react-native-vector-icons` on native. Both are installed; neither
+is wired into anything. They are available, not prescribed.
 
 ---
 
-Related: [Your first feature](./your-first-feature.md)
-renders a `ui-web` component from a Next.js route, and
-[The workspace](./the-workspace.md) covers where each
-kind of change belongs.
+Related: [Your first feature](./your-first-feature.md) renders a `ui-web` component from
+a route, and [The skills](../ai/the-skills.md) covers the rest of the dev kit.

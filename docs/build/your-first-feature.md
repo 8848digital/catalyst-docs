@@ -1,18 +1,27 @@
 ---
-title: Build your first feature
-description: Build a complete vertical slice - local database, repository, hook, component, and route - and see it running in the browser.
+title: Your first feature
+description: Generate a vertical slice with the feature-slice skill, understand what it produced, and wire it to a screen.
 ---
 
-This tutorial builds a working feature end to end: a list of notes read from the
-local database and rendered in the web application. It follows the same structure as
-`packages/core/src/features/example`, the template's reference slice.
+This tutorial builds a working feature end to end: a list of notes read from the local
+database and rendered in the web application.
 
-Allow roughly forty-five minutes. No backend is required.
+The data layer is **generated**, not typed by hand. That is how features are built on
+Catalyst, and it is also the fastest way to learn the conventions - you read a correct
+example instead of assembling one.
+
+Allow about forty-five minutes. No backend is required.
+
+:::note[Following along without the dev kit]
+
+The generator is an internal Claude Code plugin. Every file it produces is shown in full
+below, so the tutorial works whether you run the command or type the files yourself.
+
+:::
 
 ## What you will build
 
-A `/notes` route displaying records read from a local SQLite table, through the full
-layering:
+A `/notes` route reading from a local SQLite table, through the full layering:
 
 ```
 apps/web/app/notes/page.tsx          the route (Server Component)
@@ -22,24 +31,38 @@ apps/web/app/notes/page.tsx          the route (Server Component)
                     └── data/local   SQL
 ```
 
-Every layer has one responsibility, and each depends only on the layer beneath it.
+Each layer has one responsibility and depends only on the layer beneath it.
 
 ## Before you start
 
-You need a project generated from the [Quickstart](./quickstart.md), with
-`pnpm --filter web dev` running successfully.
+A project from the [Quickstart](./quickstart.md), with `pnpm --filter web dev` running.
 
-Use a recent Chrome, Edge, Firefox, or Safari. The local database is SQLite compiled
-to WebAssembly running over the Origin Private File System, which requires
-cross-origin isolation. The template's `next.config.ts` already sends the required
-headers in development. Browser shields and privacy extensions can still block it.
+Use a recent Chrome, Edge, Firefox, or Safari. The local database is SQLite compiled to
+WebAssembly over the Origin Private File System, which needs cross-origin isolation. The
+template's `next.config.ts` already sends the headers in development; browser shields can
+still block it.
 
-## Step 1 - Create the slice and its type
+## Step 1 - Generate the slice
 
-Create `packages/core/src/features/notes/notes.types.ts`:
+```
+/feature-slice new slice notes
+```
+
+The skill asks what the feature holds. Describe the shape, or paste a real API response
+and it will derive the types from that:
+
+> A note has an id, a title, a body, and a created_at timestamp.
+
+It scaffolds `packages/core/src/features/notes/` with the layering already correct.
+
+## Step 2 - Read what it produced
+
+This is the part worth slowing down for. Each file has one job, and the direction of
+dependency between them is the entire convention.
+
+### The type
 
 ```ts title="packages/core/src/features/notes/notes.types.ts"
-/** Row of the local `note` table. */
 export interface Note {
   id: string;
   title: string;
@@ -48,94 +71,40 @@ export interface Note {
 }
 ```
 
-A feature's own types live in its slice, never in the global `types/` barrel. That
-barrel is reserved for types genuinely shared across several features, and the linter
-enforces the distinction.
+Feature-local, never the global `types/` barrel - that is reserved for types shared
+across several features, and the linter enforces the distinction. Field names mirror the
+backend, so they stay snake_case.
 
-## Step 2 - The local data source
-
-Create `packages/core/src/features/notes/data/local.ts`:
+### The local data source
 
 ```ts title="packages/core/src/features/notes/data/local.ts"
 import { getOfflineDb } from '@8848digital/offline-kit';
 import type { Note } from '../notes.types';
 
-const SEED: readonly Note[] = [
-  { id: 'n1', title: 'First note', body: 'Created locally, with no server involved.', created_at: '2026-01-01T09:00:00Z' },
-  { id: 'n2', title: 'Second note', body: 'Read straight out of the on-device database.', created_at: '2026-01-02T09:00:00Z' },
-];
-
-/**
- * TUTORIAL SCAFFOLDING - not a production pattern. See the note below.
- * Creates the table and inserts sample rows. Both statements are idempotent,
- * so running this repeatedly is safe.
- */
-export async function bootstrapNotesTable(): Promise<void> {
-  const db = await getOfflineDb();
-
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS note (
-      id         TEXT PRIMARY KEY,
-      title      TEXT NOT NULL,
-      body       TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    )
-  `);
-
-  for (const note of SEED) {
-    await db.exec('INSERT OR REPLACE INTO note (id, title, body, created_at) VALUES (?, ?, ?, ?)', [note.id, note.title, note.body, note.created_at]);
-  }
-}
-
-/** Reads every note, newest first. */
 export async function getNotes(): Promise<Note[]> {
   const db = await getOfflineDb();
   return db.all<Note>('SELECT id, title, body, created_at FROM note ORDER BY created_at DESC');
 }
 ```
 
-:::warning[Tutorial scaffolding]
+The `data` directory is one of the few places allowed to import `getOfflineDb` and run
+SQL. Step 8 shows what happens when that rule is broken.
 
-`bootstrapNotesTable` exists only so this tutorial runs without a backend.
-
-In a real deployment the application never creates its own tables. The server sends
-table definitions as sequenced data-definition statements, and inbound
-synchronisation applies them to the local database in order - see
-[Architecture](../how-it-works/architecture.md). Delete this function once your tables
-arrive from the server.
-
-:::
-
-This file sits in the slice's `data` directory, one of the few locations permitted to
-import `getOfflineDb` and run SQL. Step 10 demonstrates what happens when that rule
-is broken.
-
-## Step 3 - The repository
-
-Create `packages/core/src/features/notes/repo.ts`:
+### The repository
 
 ```ts title="packages/core/src/features/notes/repo.ts"
 import type { Note } from './notes.types';
-import { bootstrapNotesTable, getNotes } from './data/local';
+import { getNotes } from './data/local';
 
-/**
- * The single place that decides local versus remote. Hooks call the repository
- * and never touch SQL or HTTP directly.
- */
 export const notesRepo = {
-  list: async (): Promise<Note[]> => {
-    await bootstrapNotesTable(); // tutorial scaffolding - remove for real data
-    return getNotes();
-  },
+  list: (): Promise<Note[]> => getNotes(),
 };
 ```
 
-The repository is the seam that lets a slice switch between local and remote without
-anything above it changing. Step 11 exercises that.
+The single place that decides local versus remote. Hooks call the repository and never
+touch SQL or HTTP. Step 9 exercises why that matters.
 
-## Step 4 - The hook
-
-Create `packages/core/src/features/notes/hooks.ts`:
+### The hook
 
 ```ts title="packages/core/src/features/notes/hooks.ts"
 import type { Note } from './notes.types';
@@ -152,13 +121,11 @@ export function useGetNotes(): LegacyQueryShape<Note[]> {
 }
 ```
 
-`useLocalQuery` is used rather than React Query's `useQuery` for two reasons: local
-reads must never be served stale, and they must not be paused while the device is
-offline. `toLegacyShape` flattens the result to `{ data, isLoading, isError, error }`.
+`useLocalQuery` rather than React Query's `useQuery`, for two reasons: local reads must
+never be served stale, and they must not be paused while the device is offline.
+`toLegacyShape` flattens the result to `{ data, isLoading, isError, error }`.
 
-## Step 5 - Export the slice
-
-Create the slice barrel, `packages/core/src/features/notes/index.ts`:
+### The barrels
 
 ```ts title="packages/core/src/features/notes/index.ts"
 export type { Note } from './notes.types';
@@ -166,23 +133,87 @@ export { useGetNotes } from './hooks';
 export { notesRepo } from './repo';
 ```
 
-Add the hook to `packages/core/src/hooks/index.ts`:
+And the slice is surfaced from the package:
 
 ```ts title="packages/core/src/hooks/index.ts"
 export { useGetExamples } from '../features/example';
 export { useGetNotes } from '../features/notes';
 ```
 
-And the type to `packages/core/src/index.ts`, alongside the existing exports:
+## Step 3 - Review it
 
-```ts title="packages/core/src/index.ts"
-export type { Note } from './features/notes';
+Generated code is reliable at conventions and needs checking wherever judgement was
+involved. Three things, every time:
+
+1. **Import specifiers.** The kit currently emits `@repo/core` where this project uses
+   `@app/core`, and `@repo/offline-kit` where it uses `@8848digital/offline-kit`.
+   TypeScript flags these as unresolved, so they fail loudly - but correct them first.
+2. **The types against reality.** They mirror whatever you described or pasted. If the
+   sample was partial, the types are wrong in a way that still compiles.
+3. **The SQL.** Read the `WHERE` clause and the ordering. Valid SQL can still select the
+   wrong rows.
+
+[Trust and verify](../ai/trust-and-verify.md) has the full split of what to accept and
+what to check.
+
+## Step 4 - Give the table something to read
+
+The generated `data/local.ts` queries a `note` table that does not exist yet. In a real
+project it arrives from the server. Here, create and seed it:
+
+```ts title="packages/core/src/features/notes/data/local.ts"
+const SEED: readonly Note[] = [
+  { id: 'n1', title: 'First note', body: 'Created locally, with no server involved.', created_at: '2026-01-01T09:00:00Z' },
+  { id: 'n2', title: 'Second note', body: 'Read straight out of the on-device database.', created_at: '2026-01-02T09:00:00Z' },
+];
+
+/** TUTORIAL SCAFFOLDING - see the note below. Both statements are idempotent. */
+export async function bootstrapNotesTable(): Promise<void> {
+  const db = await getOfflineDb();
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS note (
+      id         TEXT PRIMARY KEY,
+      title      TEXT NOT NULL,
+      body       TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )
+  `);
+
+  for (const note of SEED) {
+    await db.exec('INSERT OR REPLACE INTO note (id, title, body, created_at) VALUES (?, ?, ?, ?)', [note.id, note.title, note.body, note.created_at]);
+  }
+}
 ```
 
-## Step 6 - Let the component library use the core package
+Call it from the repository:
 
-`@app/ui-web` does not yet depend on `@app/core`, so the hook cannot be imported
-there. Add the dependency to `packages/ui-web/package.json`:
+```ts title="packages/core/src/features/notes/repo.ts"
+export const notesRepo = {
+  list: async (): Promise<Note[]> => {
+    await bootstrapNotesTable(); // tutorial scaffolding - remove for real data
+    return getNotes();
+  },
+};
+```
+
+:::warning[Tutorial scaffolding]
+
+`bootstrapNotesTable` exists only so this tutorial runs without a backend, which is why
+the generator did not produce it.
+
+In a real deployment the application never creates its own tables. The server sends table
+definitions as sequenced data-definition statements, and inbound synchronisation applies
+them in order - see [Offline sync](../how-it-works/offline-sync.md). Delete this function
+once your tables arrive from the server.
+
+:::
+
+## Step 5 - Let the component library use the core package
+
+`@app/ui-web` does not declare `@app/core`. Every other package in the workspace does;
+this one is the exception, so a component there cannot import a product hook until you
+add it:
 
 ```json title="packages/ui-web/package.json"
 "dependencies": {
@@ -194,15 +225,15 @@ there. Add the dependency to `packages/ui-web/package.json`:
 }
 ```
 
-Then re-link the workspace:
+Then `pnpm install`.
 
-```bash
-pnpm install
-```
+## Step 6 - The component
 
-## Step 7 - The component
+Components are normally generated too, by the `web-component` skill. That skill is
+**Figma-first**: it pulls a design node, extracts its values, and maps them to tokens.
+This tutorial has no Figma node, so there is nothing to extract - write this one by hand.
 
-Create `packages/ui-web/src/components/NotesList.tsx`:
+Knowing when a skill does not apply is part of using them well.
 
 ```tsx title="packages/ui-web/src/components/NotesList.tsx"
 'use client';
@@ -229,21 +260,16 @@ export function NotesList() {
 }
 ```
 
-Export it from `packages/ui-web/src/index.ts`:
+`'use client'` is required because it uses a hook. Every class name resolves to a design
+token rather than a raw value - see [Components and tokens](./components-and-tokens.md).
+
+Export it from the barrel:
 
 ```ts title="packages/ui-web/src/index.ts"
 export { NotesList } from './components/NotesList';
 ```
 
-Two details matter here. The `"use client"` directive is required because the
-component uses a hook; without it, Next.js would attempt to render it on the server.
-And every class name resolves to a design token - `text-text-primary`,
-`bg-surface-canvas`, `rounded-md` - rather than a raw value, so rebranding means
-editing `packages/core/src/tokens/index.ts` and nothing else.
-
-## Step 8 - The route
-
-Create `apps/web/app/notes/page.tsx`:
+## Step 7 - The route
 
 ```tsx title="apps/web/app/notes/page.tsx"
 import { NotesList } from '@app/ui-web';
@@ -260,26 +286,24 @@ export default function NotesPage() {
 }
 ```
 
-This is a Server Component. It owns routing, layout, and metadata, then renders the
-client component. The division is deliberate: `apps/web/app/**` is the server shell
-and has no native counterpart, whereas `NotesList` is pure React and could be given a
-native twin.
+This is a Server Component. It owns routing and metadata, then renders the client
+component. `apps/web/app/**` is the server shell and has no native counterpart, whereas
+`NotesList` is pure React and could be given a native twin.
 
-## Step 9 - Run it
+Run it:
 
 ```bash
 pnpm --filter web dev
 ```
 
-Open **http://localhost:3000/notes**. Two notes render, read from SQLite in the
-browser.
+Open **http://localhost:3000/notes**. Two notes render, read from SQLite in the browser.
+Reload - they persist, because they live in the on-device database rather than component
+state.
 
-Reload the page. The rows persist, because they are in the on-device database rather
-than in component state.
+## Step 8 - What the linter prevents
 
-## Step 10 - What the linter prevents
-
-The layering rules are enforced, not merely documented. Prove it.
+The layering rules are enforced, not merely documented. This is also why the generator
+produces correct code: the rules it follows are the rules that fail the build.
 
 Temporarily add this import to `hooks.ts`, where it does not belong:
 
@@ -287,13 +311,7 @@ Temporarily add this import to `hooks.ts`, where it does not belong:
 import { getOfflineDb } from '@8848digital/offline-kit';
 ```
 
-Then run:
-
-```bash
-pnpm lint
-```
-
-The rule fails with an explanation rather than a bare rule name:
+Then run `pnpm lint`:
 
 ```
 Raw DB access (getOfflineDb) is only allowed in a feature data source
@@ -302,41 +320,14 @@ shared-domain helper. Hooks, repos, and the chassis must delegate to those - the
 must not run SQL directly.
 ```
 
-Remove the import again. Two related rules are enforced the same way: `axios` is
-banned project-wide in favour of the client from `@8848digital/catalyst`, and feature
-files may not import the global `types/` barrel.
+Remove it again. Two related rules work the same way: `axios` is banned in favour of the
+client from `@8848digital/catalyst`, and feature files may not import the global `types/`
+barrel.
 
-## Step 11 - Taking the slice online
+## Step 9 - Taking the slice online
 
-The slice currently reads locally. Adding a remote source touches three files, and
-neither the hook nor the component is among them.
-
-Register the endpoint in `packages/core/src/api/endpoints.ts`:
-
-```ts title="packages/core/src/api/endpoints.ts"
-export const endpoints = {
-  example: {
-    getList: buildEndpoint('v1', 'example', 'get_list', APP),
-  },
-  notes: {
-    getList: buildEndpoint('v1', 'notes', 'get_list', APP),
-  },
-} as const;
-```
-
-Add `packages/core/src/features/notes/data/remote.ts`:
-
-```ts title="packages/core/src/features/notes/data/remote.ts"
-import { api } from '@8848digital/catalyst';
-import { endpoints } from '../../../api/endpoints';
-import type { Note } from '../notes.types';
-
-export const notesRemote = {
-  getList: (): Promise<Note[]> => api.get<Note[]>(endpoints.notes.getList),
-};
-```
-
-Then change the repository - the only file above the data layer that moves:
+The generator already produced `data/remote.ts` and its endpoint entry. Going online is
+therefore a change to **one** file - the repository:
 
 ```ts title="packages/core/src/features/notes/repo.ts"
 import type { Note } from './notes.types';
@@ -352,40 +343,41 @@ export const notesRepo = {
 `hooks.ts`, `NotesList.tsx`, and `page.tsx` are untouched. That containment is the
 practical return on the layering.
 
-Running this against real data requires a Frappe site exposing the endpoint.
+Running it against real data needs a Frappe site exposing the endpoint.
 
-## Step 12 - The native twin
+## Step 10 - The native twin
 
-Steps 1 through 5 are already shared. `@app/core` imports no browser API, so
-`useGetNotes` runs unchanged on React Native. Only the component layer differs.
+Steps 1 to 5 are already shared. `@app/core` imports no browser API, so `useGetNotes`
+runs unchanged on React Native. Only the component layer differs, and it is ported rather
+than rewritten:
 
-A native equivalent lives in `packages/ui-native/src/components/NotesList.tsx`, built
-from `View`, `Text`, and `FlatList`, styled through `StyleSheet.create` using
-`rnTokens` from `@app/core/tokens/rn-styles` - the same token values the web classes
-resolve to. Register the screen in `apps/native/src/navigation/RootNavigator.tsx`.
+```
+port NotesList from ui-web to ui-native
+```
 
-Unlike `@app/ui-web`, `@app/ui-native` already declares `@app/core` as a dependency,
-so no equivalent of step 6 is needed on the native side.
+The `web-to-native` skill mirrors the props verbatim, maps HTML elements to RN
+primitives, converts Tailwind classes to `rnTokens`, and leaves `@app/core` untouched.
+Unlike `@app/ui-web`, `@app/ui-native` already declares `@app/core`, so no equivalent of
+step 5 is needed.
 
-The data path - repository, hook, SQL, synchronisation - is not rewritten. That is
-the return on keeping `@app/core` free of platform APIs.
+The data path - repository, hook, SQL, synchronisation - is not rewritten. That is the
+return on keeping `@app/core` free of platform APIs.
 
 ## What you built
 
-| Layer | File | Responsibility |
-|---|---|---|
-| Type | `notes.types.ts` | The slice's own domain type |
-| Data | `data/local.ts` | SQL - the only layer permitted to touch the database |
-| Repository | `repo.ts` | Chooses local or remote |
-| Hook | `hooks.ts` | Exposes the data to React |
-| Component | `ui-web/NotesList.tsx` | Renders it, using tokens |
-| Route | `app/notes/page.tsx` | Server shell: routing and metadata |
+| Layer | File | Responsibility | Source |
+|---|---|---|---|
+| Type | `notes.types.ts` | The slice's own domain type | generated |
+| Data | `data/local.ts` | SQL - the only layer allowed to touch the database | generated |
+| Repository | `repo.ts` | Chooses local or remote | generated |
+| Hook | `hooks.ts` | Exposes the data to React | generated |
+| Component | `ui-web/NotesList.tsx` | Renders it, using tokens | hand-written (no Figma) |
+| Route | `app/notes/page.tsx` | Server shell: routing and metadata | hand-written |
 
-Copy this structure for every feature. `packages/core/src/features/example` remains in
-the template as a reference.
+The pattern holds for every feature: **generate the data path, review it, then build the
+interface on top.**
 
 ---
 
-Related: [The workspace](./the-workspace.md) for the wider repository
-tour, and [Architecture](../how-it-works/architecture.md) for the architecture these rules
-come from.
+Related: [The workspace](./the-workspace.md) for where each kind of change belongs, and
+[The skills](../ai/the-skills.md) for what else the dev kit generates.
