@@ -1,6 +1,6 @@
 ---
 title: What am I looking at?
-description: A tour of the generated workspace — the two applications, the three shared packages, where each kind of change belongs, and what the startup files do.
+description: A tour of the generated workspace - the two applications, the three shared packages, where each kind of change belongs, and what the startup files do.
 ---
 
 The Quickstart produced a running application. This page explains what the repository
@@ -14,7 +14,7 @@ packages.
 ```
 apps/
   web/                      Next.js application (App Router)
-    app/                    the server shell — routing, layout, metadata
+    app/                    the server shell - routing, layout, metadata
     src/offline/            web platform drivers: database, connectivity, geolocation
     src/stores/             the authentication store instance
     public/sqlite/          SQLite WebAssembly assets, copied in before dev and build
@@ -28,14 +28,14 @@ apps/
     android/  ios/          native projects, under version control
 
 packages/
-  core/                     @app/core — platform-neutral application code
+  core/                     @app/core - platform-neutral application code
     src/features/           vertical feature slices
     src/tokens/             design tokens
     src/api/                business endpoint registry
     src/types/              domain types shared across features
     src/hooks/              the public hook barrel
-  ui-web/                   @app/ui-web — web components
-  ui-native/                @app/ui-native — native components
+  ui-web/                   @app/ui-web - web components
+  ui-native/                @app/ui-native - native components
 ```
 
 Both UI packages ship empty. That is deliberate: components are product decisions, and
@@ -50,7 +50,7 @@ counterpart and is never migrated.
 
 **`apps/native`** is a bare React Native application. The `android/` and `ios/`
 directories are real native projects held in version control, which is what makes
-release configuration — signing, bundle identifiers, permissions — a direct edit
+release configuration - signing, bundle identifiers, permissions - a direct edit
 rather than a build-service setting.
 
 Interface code intended to run on both platforms does not belong in either
@@ -99,8 +99,8 @@ differ; they stay aligned because both consume the same tokens.
 Each application supplies the engine and chassis with its platform-specific
 implementations exactly once, at startup:
 
-- Web — `apps/web/app/providers.tsx`, inside an effect so it runs in the browser only
-- Native — `apps/native/src/bootstrap.ts`, imported before the app registers
+- Web - `apps/web/app/providers.tsx`, inside an effect so it runs in the browser only
+- Native - `apps/native/src/bootstrap.ts`, imported before the app registers
 
 Both register the same set. Only the implementations differ:
 
@@ -109,7 +109,7 @@ Both register the same set. Only the implementations differ:
 | `setApiApp` | the Frappe app name | the Frappe app name |
 | `setBaseUrl` | `process.env.NEXT_PUBLIC_API_BASE_URL` | `Config.API_BASE_URL` |
 | `setGetToken` / `setLogout` | auth store backed by `localStorage` | auth store backed by `AsyncStorage` |
-| `setNavigate` | `router.push` | not registered — clearing the token flips the navigator |
+| `setNavigate` | `router.push` | not registered - clearing the token flips the navigator |
 | `setOfflineDbOpener` | SQLite WebAssembly over OPFS | `react-native-sqlite-2` |
 | `setSyncTransport` | `httpSyncTransport` | `httpSyncTransport` |
 | `setConnectivityProvider` | browser online and offline events | NetInfo |
@@ -153,5 +153,5 @@ than only the rule name.
 
 ---
 
-Next: [Build your first feature](./build-your-first-feature.md) — a complete vertical
+Next: [Your first feature](./your-first-feature.md) - a complete vertical
 slice, from the database to the screen.

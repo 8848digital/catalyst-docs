@@ -8,22 +8,22 @@ import styles from "./index.module.css";
 
 const ENTRY_POINTS = [
   {
-    title: "What is Catalyst?",
-    to: "/docs/getting-started/what-is-catalyst",
+    title: "Why Catalyst",
+    to: "/docs/why-catalyst",
     description:
-      "The three layers, the dependency rule that governs them, and what each one is responsible for.",
+      "The problem it was built to solve, what it changes about delivery, and where it fits.",
   },
   {
     title: "Quickstart",
-    to: "/docs/getting-started/quickstart",
+    to: "/docs/build/quickstart",
     description:
       "Create a project from the template and get the web application running in about ten minutes.",
   },
   {
-    title: "Build your first feature",
-    to: "/docs/getting-started/build-your-first-feature",
+    title: "Your first feature",
+    to: "/docs/build/your-first-feature",
     description:
-      "A complete vertical slice — local database, repository, hook, component, and route.",
+      "A complete vertical slice - local database, repository, hook, component, and route.",
   },
 ];
 
@@ -42,13 +42,13 @@ function Hero() {
         <div className={styles.actions}>
           <Link
             className={styles.primaryAction}
-            to="/docs/getting-started/what-is-catalyst"
+            to="/docs/why-catalyst"
           >
             Read the docs
           </Link>
           <Link
             className={styles.secondaryAction}
-            to="/docs/getting-started/quickstart"
+            to="/docs/build/quickstart"
           >
             Quickstart
           </Link>
@@ -63,7 +63,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={siteConfig.title}
-      description="Documentation for the Catalyst stack — offline-first Web and Mobile applications."
+      description="Documentation for the Catalyst stack - offline-first Web and Mobile applications."
     >
       <Hero />
       <main className={styles.main}>

@@ -1,6 +1,6 @@
 ---
 title: Build your first feature
-description: Build a complete vertical slice — local database, repository, hook, component, and route — and see it running in the browser.
+description: Build a complete vertical slice - local database, repository, hook, component, and route - and see it running in the browser.
 ---
 
 This tutorial builds a working feature end to end: a list of notes read from the
@@ -34,7 +34,7 @@ to WebAssembly running over the Origin Private File System, which requires
 cross-origin isolation. The template's `next.config.ts` already sends the required
 headers in development. Browser shields and privacy extensions can still block it.
 
-## Step 1 — Create the slice and its type
+## Step 1 - Create the slice and its type
 
 Create `packages/core/src/features/notes/notes.types.ts`:
 
@@ -52,7 +52,7 @@ A feature's own types live in its slice, never in the global `types/` barrel. Th
 barrel is reserved for types genuinely shared across several features, and the linter
 enforces the distinction.
 
-## Step 2 — The local data source
+## Step 2 - The local data source
 
 Create `packages/core/src/features/notes/data/local.ts`:
 
@@ -66,7 +66,7 @@ const SEED: readonly Note[] = [
 ];
 
 /**
- * TUTORIAL SCAFFOLDING — not a production pattern. See the note below.
+ * TUTORIAL SCAFFOLDING - not a production pattern. See the note below.
  * Creates the table and inserts sample rows. Both statements are idempotent,
  * so running this repeatedly is safe.
  */
@@ -94,14 +94,14 @@ export async function getNotes(): Promise<Note[]> {
 }
 ```
 
-:::warning Tutorial scaffolding
+:::warning[Tutorial scaffolding]
 
 `bootstrapNotesTable` exists only so this tutorial runs without a backend.
 
 In a real deployment the application never creates its own tables. The server sends
 table definitions as sequenced data-definition statements, and inbound
-synchronisation applies them to the local database in order — see
-[What is Catalyst?](./what-is-catalyst.md). Delete this function once your tables
+synchronisation applies them to the local database in order - see
+[Architecture](../how-it-works/architecture.md). Delete this function once your tables
 arrive from the server.
 
 :::
@@ -110,7 +110,7 @@ This file sits in the slice's `data` directory, one of the few locations permitt
 import `getOfflineDb` and run SQL. Step 10 demonstrates what happens when that rule
 is broken.
 
-## Step 3 — The repository
+## Step 3 - The repository
 
 Create `packages/core/src/features/notes/repo.ts`:
 
@@ -124,7 +124,7 @@ import { bootstrapNotesTable, getNotes } from './data/local';
  */
 export const notesRepo = {
   list: async (): Promise<Note[]> => {
-    await bootstrapNotesTable(); // tutorial scaffolding — remove for real data
+    await bootstrapNotesTable(); // tutorial scaffolding - remove for real data
     return getNotes();
   },
 };
@@ -133,7 +133,7 @@ export const notesRepo = {
 The repository is the seam that lets a slice switch between local and remote without
 anything above it changing. Step 11 exercises that.
 
-## Step 4 — The hook
+## Step 4 - The hook
 
 Create `packages/core/src/features/notes/hooks.ts`:
 
@@ -156,7 +156,7 @@ export function useGetNotes(): LegacyQueryShape<Note[]> {
 reads must never be served stale, and they must not be paused while the device is
 offline. `toLegacyShape` flattens the result to `{ data, isLoading, isError, error }`.
 
-## Step 5 — Export the slice
+## Step 5 - Export the slice
 
 Create the slice barrel, `packages/core/src/features/notes/index.ts`:
 
@@ -179,7 +179,7 @@ And the type to `packages/core/src/index.ts`, alongside the existing exports:
 export type { Note } from './features/notes';
 ```
 
-## Step 6 — Let the component library use the core package
+## Step 6 - Let the component library use the core package
 
 `@app/ui-web` does not yet depend on `@app/core`, so the hook cannot be imported
 there. Add the dependency to `packages/ui-web/package.json`:
@@ -200,7 +200,7 @@ Then re-link the workspace:
 pnpm install
 ```
 
-## Step 7 — The component
+## Step 7 - The component
 
 Create `packages/ui-web/src/components/NotesList.tsx`:
 
@@ -237,11 +237,11 @@ export { NotesList } from './components/NotesList';
 
 Two details matter here. The `"use client"` directive is required because the
 component uses a hook; without it, Next.js would attempt to render it on the server.
-And every class name resolves to a design token — `text-text-primary`,
-`bg-surface-canvas`, `rounded-md` — rather than a raw value, so rebranding means
+And every class name resolves to a design token - `text-text-primary`,
+`bg-surface-canvas`, `rounded-md` - rather than a raw value, so rebranding means
 editing `packages/core/src/tokens/index.ts` and nothing else.
 
-## Step 8 — The route
+## Step 8 - The route
 
 Create `apps/web/app/notes/page.tsx`:
 
@@ -265,7 +265,7 @@ client component. The division is deliberate: `apps/web/app/**` is the server sh
 and has no native counterpart, whereas `NotesList` is pure React and could be given a
 native twin.
 
-## Step 9 — Run it
+## Step 9 - Run it
 
 ```bash
 pnpm --filter web dev
@@ -277,7 +277,7 @@ browser.
 Reload the page. The rows persist, because they are in the on-device database rather
 than in component state.
 
-## Step 10 — What the linter prevents
+## Step 10 - What the linter prevents
 
 The layering rules are enforced, not merely documented. Prove it.
 
@@ -298,7 +298,7 @@ The rule fails with an explanation rather than a bare rule name:
 ```
 Raw DB access (getOfflineDb) is only allowed in a feature data source
 (features/*/data), a use-case (usecases.ts), an outbox adapter (outbox.ts), or a
-shared-domain helper. Hooks, repos, and the chassis must delegate to those — they
+shared-domain helper. Hooks, repos, and the chassis must delegate to those - they
 must not run SQL directly.
 ```
 
@@ -306,7 +306,7 @@ Remove the import again. Two related rules are enforced the same way: `axios` is
 banned project-wide in favour of the client from `@8848digital/catalyst`, and feature
 files may not import the global `types/` barrel.
 
-## Step 11 — Taking the slice online
+## Step 11 - Taking the slice online
 
 The slice currently reads locally. Adding a remote source touches three files, and
 neither the hook nor the component is among them.
@@ -336,7 +336,7 @@ export const notesRemote = {
 };
 ```
 
-Then change the repository — the only file above the data layer that moves:
+Then change the repository - the only file above the data layer that moves:
 
 ```ts title="packages/core/src/features/notes/repo.ts"
 import type { Note } from './notes.types';
@@ -354,20 +354,20 @@ practical return on the layering.
 
 Running this against real data requires a Frappe site exposing the endpoint.
 
-## Step 12 — The native twin
+## Step 12 - The native twin
 
 Steps 1 through 5 are already shared. `@app/core` imports no browser API, so
 `useGetNotes` runs unchanged on React Native. Only the component layer differs.
 
 A native equivalent lives in `packages/ui-native/src/components/NotesList.tsx`, built
 from `View`, `Text`, and `FlatList`, styled through `StyleSheet.create` using
-`rnTokens` from `@app/core/tokens/rn-styles` — the same token values the web classes
+`rnTokens` from `@app/core/tokens/rn-styles` - the same token values the web classes
 resolve to. Register the screen in `apps/native/src/navigation/RootNavigator.tsx`.
 
-As in step 6, `@app/ui-native` needs `@app/core` added to its dependencies before it
-can import the hook.
+Unlike `@app/ui-web`, `@app/ui-native` already declares `@app/core` as a dependency,
+so no equivalent of step 6 is needed on the native side.
 
-The data path — repository, hook, SQL, synchronisation — is not rewritten. That is
+The data path - repository, hook, SQL, synchronisation - is not rewritten. That is
 the return on keeping `@app/core` free of platform APIs.
 
 ## What you built
@@ -375,7 +375,7 @@ the return on keeping `@app/core` free of platform APIs.
 | Layer | File | Responsibility |
 |---|---|---|
 | Type | `notes.types.ts` | The slice's own domain type |
-| Data | `data/local.ts` | SQL — the only layer permitted to touch the database |
+| Data | `data/local.ts` | SQL - the only layer permitted to touch the database |
 | Repository | `repo.ts` | Chooses local or remote |
 | Hook | `hooks.ts` | Exposes the data to React |
 | Component | `ui-web/NotesList.tsx` | Renders it, using tokens |
@@ -386,6 +386,6 @@ the template as a reference.
 
 ---
 
-Related: [What am I looking at?](./what-am-i-looking-at.md) for the wider repository
-tour, and [What is Catalyst?](./what-is-catalyst.md) for the architecture these rules
+Related: [The workspace](./the-workspace.md) for the wider repository
+tour, and [Architecture](../how-it-works/architecture.md) for the architecture these rules
 come from.

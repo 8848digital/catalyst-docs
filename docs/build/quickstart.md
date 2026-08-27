@@ -4,7 +4,7 @@ description: Create a project from the reactant template, personalise it, and ge
 ---
 
 This guide takes a new project from an empty directory to a running web application.
-It requires no backend — the initial screen renders without a server, so the
+It requires no backend - the initial screen renders without a server, so the
 environment can be verified before any API is available.
 
 Expect this to take about ten minutes, most of which is dependency installation.
@@ -36,7 +36,7 @@ to your **user-level** `~/.npmrc`:
 ```
 
 The template repository already contains an `.npmrc` that routes the `@8848digital`
-scope to the correct registry. Only the token belongs in your user-level file — never
+scope to the correct registry. Only the token belongs in your user-level file - never
 commit it to a project.
 
 ## 2. Create your project repository
@@ -89,7 +89,7 @@ The script prompts for two values:
 
 It then writes:
 
-- the workspace package names, derived as a slug from the project name — `my-project`, `my-project-web`, `my-project-native`
+- the workspace package names, derived as a slug from the project name - `my-project`, `my-project-web`, `my-project-native`
 - the browser page title, in the web application's root layout
 - `apps/web/.env` with `NEXT_PUBLIC_API_BASE_URL`
 - `apps/native/.env` with `API_BASE_URL`
@@ -124,20 +124,20 @@ to reach this point.
 ## What the startup sequence did
 
 Before the first screen rendered, the application supplied every platform-specific
-implementation the lower layers require — the database driver, the connectivity
+implementation the lower layers require - the database driver, the connectivity
 source, the synchronisation transport, the API base URL, and the authentication token
 accessor.
 
 That wiring lives in one file per platform:
 
-- Web — `apps/web/app/providers.tsx`
-- Mobile — `apps/native/src/bootstrap.ts`
+- Web - `apps/web/app/providers.tsx`
+- Mobile - `apps/native/src/bootstrap.ts`
 
 Both register the same set of implementations. Only the concrete values differ.
 
 ## Running the mobile application
 
-This step requires a configured React Native toolchain — Android Studio for Android,
+This step requires a configured React Native toolchain - Android Studio for Android,
 Xcode for iOS. Substitute your own project slug:
 
 ```bash
@@ -165,5 +165,5 @@ when the headers are correct.
 
 ---
 
-Next: [What am I looking at?](./what-am-i-looking-at.md) — a tour of the workspace you
+Next: [The workspace](./the-workspace.md) - a tour of the workspace you
 just generated, and where each kind of change belongs.

@@ -17,9 +17,9 @@ const config: Config = {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
-  // TODO(hosting): placeholder — set once we decide where this deploys.
-  // These assume GitHub Pages under the 8848digital org. If it moves to a
-  // custom domain, `url` becomes that domain and `baseUrl` becomes '/'.
+  // Live at https://8848digital.github.io/catalyst-docs/ via GitHub Pages.
+  // If this ever moves to a custom domain, `url` becomes that domain and
+  // `baseUrl` becomes '/'.
   url: "https://8848digital.github.io",
   baseUrl: "/catalyst-docs/",
 
@@ -55,6 +55,22 @@ const config: Config = {
     defaultLocale: "en",
     locales: ["en"],
   },
+
+  // The docs were restructured after the site went live. These keep the four
+  // originally-published URLs working instead of 404ing on anyone who kept a link.
+  plugins: [
+    [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: [
+          { from: "/docs/getting-started/what-is-catalyst", to: "/docs/how-it-works/architecture" },
+          { from: "/docs/getting-started/quickstart", to: "/docs/build/quickstart" },
+          { from: "/docs/getting-started/what-am-i-looking-at", to: "/docs/build/the-workspace" },
+          { from: "/docs/getting-started/build-your-first-feature", to: "/docs/build/your-first-feature" },
+        ],
+      },
+    ],
+  ],
 
   presets: [
     [
