@@ -18,7 +18,9 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "How Catalyst works",
       collapsed: false,
-      items: ["how-it-works/architecture", "how-it-works/offline-sync"],
+      items: ["how-it-works/architecture",
+        "how-it-works/offline-sync",
+        "how-it-works/data-flow",],
     },
     {
       type: "category",
@@ -33,7 +35,9 @@ const sidebars: SidebarsConfig = {
       items: [
         "build/quickstart",
         "build/the-workspace",
+        "build/design-system-setup",
         "build/your-first-feature",
+        "build/writes-and-the-outbox",
         "build/components-and-tokens",
       ],
     },
@@ -47,6 +51,7 @@ const sidebars: SidebarsConfig = {
         "ship-to-native/release",
       ],
     },
+    "troubleshooting",
   ],
 };
 
