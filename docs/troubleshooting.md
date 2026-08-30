@@ -87,19 +87,6 @@ it and re-run `pnpm install`:
 "dependencies": { "@app/core": "workspace:*" }
 ```
 
-### `Cannot find module '../../utils/uuid'`
-
-Also appears as `../../lib/invalidateLocalData`, `../../../api/client`, or
-`../../hooks/useApiQuery`.
-
-Generated slice code importing chassis symbols from paths that do not exist in
-`@app/core`. `generateUuid`, `invalidateLocalDataAfterWrite`, the `api` client,
-`useApiQuery`, and `useApiMutation` all live in `@8848digital/catalyst`.
-
-Replace the relative path with `@8848digital/catalyst`. Note that
-`../../../api/endpoints` is correct as generated - the endpoint registry is
-product-owned. See [Trust and verify](./ai/trust-and-verify.md).
-
 ## The local database
 
 ### `Offline mode requires the Origin Private File System`

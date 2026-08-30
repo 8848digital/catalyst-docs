@@ -143,16 +143,11 @@ export { useGetNotes } from '../features/notes';
 ## Step 3 - Review it
 
 Generated code is reliable at conventions and needs checking wherever judgement was
-involved. Three things, every time:
+involved. Two things, every time:
 
-1. **Import specifiers.** Generated slices import chassis symbols from paths that do not
-   exist in `@app/core` - `../../utils/uuid`, `../../lib/invalidateLocalData`,
-   `../../../api/client`, `../../hooks/useApiQuery`. All of those live in
-   `@8848digital/catalyst`. TypeScript flags them as unresolved, so they fail loudly -
-   but correct them first.
-2. **The types against reality.** They mirror whatever you described or pasted. If the
+1. **The types against reality.** They mirror whatever you described or pasted. If the
    sample was partial, the types are wrong in a way that still compiles.
-3. **The SQL.** Read the `WHERE` clause and the ordering. Valid SQL can still select the
+2. **The SQL.** Read the `WHERE` clause and the ordering. Valid SQL can still select the
    wrong rows.
 
 [Trust and verify](../ai/trust-and-verify.md) has the full split of what to accept and

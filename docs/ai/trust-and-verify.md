@@ -34,32 +34,8 @@ These required an interpretation, an assumption, or knowledge the AI does not ha
 | **Business rules in `usecases`**  | The skill generates the shape of a write path, not the rules governing it                                                                                    |
 | **Anything touching sync**        | Outbox adapters, retry behaviour, what counts as a permanent failure. Errors here surface as lost or duplicated records, not as build failures               |
 | **SQL correctness**               | Generated queries are syntactically valid and may still be semantically wrong - a missing filter, a wrong join, an index that does not exist                 |
-| **Import specifiers**             | See the known issue below                                                                                                                                    |
 | **Native behaviour after a port** | The port is mechanical; the _result_ has never run on a device                                                                                               |
 | **Whether the design is right**   | `design-qa` proves the component matches the Figma. It cannot tell you the Figma is wrong                                                                    |
-
-:::warning[Known issue - check the import paths]
-
-Generated slices import chassis symbols from paths that do not exist in `@app/core`:
-
-| Generated import                                        | Where it actually lives |
-| ------------------------------------------------------- | ----------------------- |
-| `../../utils/uuid`                                      | `@8848digital/catalyst` |
-| `../../lib/invalidateLocalData`                         | `@8848digital/catalyst` |
-| `../../../api/client`                                   | `@8848digital/catalyst` |
-| `../../hooks/useApiQuery`, `../../hooks/useApiMutation` | `@8848digital/catalyst` |
-
-The kit was written against a layout where the chassis lived inside the product
-repository. In reactant it is an installed package, so those relative paths resolve to
-nothing.
-
-TypeScript reports them as unresolved, so this fails loudly rather than silently - but
-expect to correct them on every generated slice until the kit is updated.
-
-`../../../api/endpoints` is correct as generated: the endpoint registry is product-owned
-and does live in `@app/core`.
-
-:::
 
 ## Hard limits
 
@@ -75,11 +51,10 @@ Four things the AI cannot do, regardless of how the prompt is written:
 Roughly two minutes per generated slice or component:
 
 1. **Do the types match reality?** Compare generated types against the actual API response, not the sample that was pasted.
-2. **Are the import paths right?** See the known issue above.
-3. **Does the SQL do what it should?** Read the `WHERE` clause and the ordering.
-4. **Is anything hardcoded?** `design-qa` catches this on components; nothing catches it in a data layer.
-5. **Run `pnpm lint`.** The layering rules are enforced, so a violation reports itself with an explanation.
-6. **Run it.** The single highest-value check, and the one the AI cannot perform.
+2. **Does the SQL do what it should?** Read the `WHERE` clause and the ordering.
+3. **Is anything hardcoded?** `design-qa` catches this on components; nothing catches it in a data layer.
+4. **Run `pnpm lint`.** The layering rules are enforced, so a violation reports itself with an explanation.
+5. **Run it.** The single highest-value check, and the one the AI cannot perform.
 
 ## Where trust breaks down over time
 
@@ -87,8 +62,9 @@ Two failure modes worth naming, because neither shows up in a build.
 
 **The skills encode conventions that may have moved on.** If a convention changes in the
 framework but not in the kit, generated code is confidently wrong. It compiles, it lints,
-and it does not match how the team now works. The import-path issue above is exactly this
-shape - the kit still assumes a repository layout the framework moved away from.
+and it does not match how the team now works. This has happened before: when the API
+client and query hooks moved out of the product repository into an installed package, the
+skills kept generating the old relative imports until someone noticed.
 
 **Reviewing less over time.** Generated output is usually right, which trains you to stop
 looking. The parts that need judgement are precisely the parts that stay wrong quietly -
