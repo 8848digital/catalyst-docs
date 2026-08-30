@@ -87,12 +87,18 @@ it and re-run `pnpm install`:
 "dependencies": { "@app/core": "workspace:*" }
 ```
 
-### `Cannot find module '@repo/core'`
+### `Cannot find module '../../utils/uuid'`
 
-Generated code carrying the dev kit's placeholder scope. This project uses `@app/core`,
-`@app/ui-web`, `@app/ui-native`, and `@8848digital/offline-kit`.
+Also appears as `../../lib/invalidateLocalData`, `../../../api/client`, or
+`../../hooks/useApiQuery`.
 
-Replace the specifier. See [Trust and verify](./ai/trust-and-verify.md).
+Generated slice code importing chassis symbols from paths that do not exist in
+`@app/core`. `generateUuid`, `invalidateLocalDataAfterWrite`, the `api` client,
+`useApiQuery`, and `useApiMutation` all live in `@8848digital/catalyst`.
+
+Replace the relative path with `@8848digital/catalyst`. Note that
+`../../../api/endpoints` is correct as generated - the endpoint registry is
+product-owned. See [Trust and verify](./ai/trust-and-verify.md).
 
 ## The local database
 

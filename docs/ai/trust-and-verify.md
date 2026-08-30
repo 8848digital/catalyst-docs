@@ -38,17 +38,26 @@ These required an interpretation, an assumption, or knowledge the AI does not ha
 | **Native behaviour after a port** | The port is mechanical; the _result_ has never run on a device                                                                                               |
 | **Whether the design is right**   | `design-qa` proves the component matches the Figma. It cannot tell you the Figma is wrong                                                                    |
 
-:::warning[Known issue - check import paths]
+:::warning[Known issue - check the import paths]
 
-The dev kit currently refers to `@repo/core`, `@repo/ui-web`, `@repo/ui-native`, and
-`@repo/offline-kit` in its examples, while projects generated from reactant use
-`@app/core`, `@app/ui-web`, `@app/ui-native`, and `@8848digital/offline-kit`.
+Generated slices import chassis symbols from paths that do not exist in `@app/core`:
 
-Generated files may carry the `@repo/*` form. Correct them to the `@app/*` equivalents.
-TypeScript will flag them as unresolved, so this fails loudly rather than silently -
-but it is the first thing to look for in generated output.
+| Generated import                                        | Where it actually lives |
+| ------------------------------------------------------- | ----------------------- |
+| `../../utils/uuid`                                      | `@8848digital/catalyst` |
+| `../../lib/invalidateLocalData`                         | `@8848digital/catalyst` |
+| `../../../api/client`                                   | `@8848digital/catalyst` |
+| `../../hooks/useApiQuery`, `../../hooks/useApiMutation` | `@8848digital/catalyst` |
 
-This is a defect in the kit, not a convention. It is being corrected.
+The kit was written against a layout where the chassis lived inside the product
+repository. In reactant it is an installed package, so those relative paths resolve to
+nothing.
+
+TypeScript reports them as unresolved, so this fails loudly rather than silently - but
+expect to correct them on every generated slice until the kit is updated.
+
+`../../../api/endpoints` is correct as generated: the endpoint registry is product-owned
+and does live in `@app/core`.
 
 :::
 
@@ -78,8 +87,8 @@ Two failure modes worth naming, because neither shows up in a build.
 
 **The skills encode conventions that may have moved on.** If a convention changes in the
 framework but not in the kit, generated code is confidently wrong. It compiles, it lints,
-and it does not match how the team now works. The `@repo/*` issue above is exactly this
-shape.
+and it does not match how the team now works. The import-path issue above is exactly this
+shape - the kit still assumes a repository layout the framework moved away from.
 
 **Reviewing less over time.** Generated output is usually right, which trains you to stop
 looking. The parts that need judgement are precisely the parts that stay wrong quietly -

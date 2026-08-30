@@ -145,9 +145,11 @@ export { useGetNotes } from '../features/notes';
 Generated code is reliable at conventions and needs checking wherever judgement was
 involved. Three things, every time:
 
-1. **Import specifiers.** The kit currently emits `@repo/core` where this project uses
-   `@app/core`, and `@repo/offline-kit` where it uses `@8848digital/offline-kit`.
-   TypeScript flags these as unresolved, so they fail loudly - but correct them first.
+1. **Import specifiers.** Generated slices import chassis symbols from paths that do not
+   exist in `@app/core` - `../../utils/uuid`, `../../lib/invalidateLocalData`,
+   `../../../api/client`, `../../hooks/useApiQuery`. All of those live in
+   `@8848digital/catalyst`. TypeScript flags them as unresolved, so they fail loudly -
+   but correct them first.
 2. **The types against reality.** They mirror whatever you described or pasted. If the
    sample was partial, the types are wrong in a way that still compiles.
 3. **The SQL.** Read the `WHERE` clause and the ordering. Valid SQL can still select the
